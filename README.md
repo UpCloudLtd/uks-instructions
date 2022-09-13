@@ -4,7 +4,7 @@ This repository contains sample configurations for Terraform and Kubernetes mani
 
 ## Terraform
 
-See [examples/terraform](examples/terraform) for examples.
+See [terraform](terraform) directory for examples.
 
 ## Sample manifests
 
