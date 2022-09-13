@@ -6,7 +6,7 @@ Note that this repository is still under construction. We're updating the reposi
 
 ## Terraform
 
-See [terraform](terraform) directory for examples.
+See [terraform/README.md](terraform/README.md).
 
 ## Exposing Services
 
