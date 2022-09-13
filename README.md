@@ -26,6 +26,6 @@ You can verify that it works by running this simple command:
 $ curl http://lb-231912371233.upcloudlb.com
 ```
 
-### CSI
+### Persistent storage
 
-See https://github.com/UpCloudLtd/upcloud-csi/tree/main/example for examples.
+See https://github.com/UpCloudLtd/upcloud-csi/tree/main/example for various examples for our CSI driver.
