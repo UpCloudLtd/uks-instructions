@@ -2,13 +2,13 @@
 
 This repository contains sample configurations for Terraform and Kubernetes manifests to get started with our UpCloud Kubernetes Service (UKS).
 
+Note that this repository is still under construction. We're updating the repository until the test period begins.
+
 ## Terraform
 
 See [terraform](terraform) directory for examples.
 
-## Sample manifests
-
-### Exposing Services
+## Exposing Services
 
 Create a deployment and expose it to the public Internet by running the following commands:
 
@@ -26,6 +26,6 @@ You can verify that it works by running this simple command:
 $ curl http://lb-231912371233.upcloudlb.com
 ```
 
-### Persistent storage
+## Persistent storage
 
 See https://github.com/UpCloudLtd/upcloud-csi/tree/main/example for various examples for our CSI driver.
