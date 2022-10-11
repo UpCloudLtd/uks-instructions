@@ -13,8 +13,8 @@ See [terraform/README.md](terraform/README.md).
 Create a deployment and expose it to the public Internet by running the following commands:
 
 ```
-kubectl create deployment --image=nginx nginx
-kubectl expose deployment nginx --port=80 --target-port=80 --type=LoadBalancer
+kubectl create deployment --image=ghcr.io/upcloudltd/hello hello-uks
+kubectl expose deployment hello-uks --port=80 --target-port=80 --type=LoadBalancer
 kubectl get svc -w
 ```
 
