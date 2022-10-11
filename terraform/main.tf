@@ -23,10 +23,10 @@ resource "upcloud_kubernetes_cluster" "example" {
     # Group name
     name     = "maingroup"
 
-    # Plan for this worker nodes group. 
+    # Plan for each worker node in this group 
     plan     = data.upcloud_kubernetes_plan.small.description
 
-    # Keys that will be added to `autorized_keys` file on each worker node; allows you to SSH into the node itself
+    # Keys that will be added to `autorized_keys` file on each worker node; allows you to SSH into the worker node if needed
     ssh_keys = ["your_public_ssh_key"]
 
     # Labels that will be added to each node in the group
@@ -35,7 +35,7 @@ resource "upcloud_kubernetes_cluster" "example" {
     }
 
     # Arguments that will be passed to kubelet CLI for each of the worker nodes in this group
-    # WARNING - those arguments are passed without any validation; using invalid arguments here will prevent your worker nodes from working
+    # WARNING - those arguments are passed without any validation; using invalid arguments will prevent your worker nodes from being functional
     # Use this only if you know exactly what you are doing
     kubelet_args = {
       arg1 = "arg1value"
