@@ -10,3 +10,7 @@
 # Terraform
 
 - Cluster deletion might take as long as 20 minutes.
+
+# Load balancing
+
+- Load balancers are not always deleted upon cluster deletion. Please check after tests that there are no leftover load balancers on your account.
