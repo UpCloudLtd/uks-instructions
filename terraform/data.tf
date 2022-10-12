@@ -8,6 +8,6 @@ data "upcloud_kubernetes_plan" "small" {
 data "upcloud_kubernetes_cluster" "example" {
   # ID references an output field of a `upcloud_kubernetes_cluster` resource in this particular Terraform configuration.
   # If referencing a cluster created outside this Terraform configuration, one can use a literal string value
-  # (`id = "my-cluster"`) instead.
+  # (`id = "1111111-1111-1111-1111-111111111111"`) instead.
   id = upcloud_kubernetes_cluster.example.id
 }
