@@ -64,6 +64,6 @@ resource "upcloud_kubernetes_cluster" "example" {
 
 # This create a kubeconfig file for you that you can easily use with `kubectl`
 resource "local_file" "kubeconfig" {
-  content = data.upcloud_kubernetes_cluster.prod_data.kubeconfig
+  content = data.upcloud_kubernetes_cluster.example.kubeconfig
   filename = "${path.module}/kubeconfig.yml"
 }
