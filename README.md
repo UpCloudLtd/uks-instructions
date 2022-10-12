@@ -32,6 +32,25 @@ Note that this repository is still evolving. Please check back during the test p
 
 See [terraform/README.md](terraform/README.md).
 
+## API
+
+OpenAPI 3.0.3 specification for the Alpha API can be found in [openapi/openapi.yaml](openapi/openapi.yaml).
+
+Authentication can be achieved with [these](https://developers.upcloud.com/1.3/2-architecture/#authentication) instructions.
+
+### Kubeconfig
+
+Kubeconfig can be extacted from the API with a little help from `jq` as follows:
+```shell
+curl \
+  --request GET \
+  --url https://api.upcloud.com/1.3/kubernetes/11111111-1111-1111-1111-111111111111/kubeconfig \
+  --header 'Authorization: Basic FAKE' \
+  --header 'Content-Type: application/json' \
+  --silent \
+  | jq --raw-output '.kubeconfig'
+```
+
 ## Exposing Services
 
 Create a deployment and expose it to the public Internet over HTTP by running the following commands:
