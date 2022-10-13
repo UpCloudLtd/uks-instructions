@@ -13,7 +13,7 @@ Note that this repository is still evolving. Please check back during the test p
 * Click `Create Cluster`
 * The Alpha test is being run in a single zone, and the option has been pre-chosen for you
 * Select a Private Network for your Worker Nodes. (If you need more information about creating a network, a link has 
-  been provided with more information) NB! This network will need to be created in the same zone as the Alpha tests `de-fra1`
+  been provided with more information) **NB!** Make sure to use a valid range (see [KNOWN_ISSUES.md](KNOWN_ISSUES.md#Networking)). This network will need to be created in the same zone as the Alpha tests: `de-fra1`
 * Provide a name for your cluster and click `Next`
 * Create a Node Group
   * Groups of worker nodes with identical image templates are organized for convenience
@@ -26,6 +26,7 @@ Note that this repository is still evolving. Please check back during the test p
 
 ### Troubleshooting
 
+* Check [KNOWN_ISSUES.md](KNOWN_ISSUES.md)
 * If you are attempting to access your cluster with a brand new `KubeConfig` and receive an error `no route to host`, this means that the DNS has not been fully configured, and you will need to wait a few more minutes.
   * Alternatively, you can flush your local DNS cache with: `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder`
 ##  Terraform
