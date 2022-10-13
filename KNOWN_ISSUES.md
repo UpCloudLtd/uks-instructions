@@ -15,6 +15,6 @@
 
 - Some network ranges are not allowed for node group usage, so please not use the following when creating a private network for the cluster:
   - `10.0.0.0/8`
-  - `172.31.242.0/22`
+  - `172.31.240.0/24`
 - Intermittent timeout issues when running `kubectl logs` and `kubectl exec`. Work around it by re-running the command(s).
 - Load balancers are not always deleted upon cluster deletion. Please check after tests that there are no leftover load balancers on your account.
