@@ -3,7 +3,7 @@ resource "upcloud_network" "example" {
   name = "my-cluster-network"
   zone = var.zone
   ip_network {
-    address = "10.0.95.0/24"
+    address = "172.16.1.0/24"
     dhcp    = true
     family  = "IPv4"
   }
