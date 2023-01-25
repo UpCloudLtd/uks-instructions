@@ -14,52 +14,39 @@ resource "upcloud_kubernetes_cluster" "example" {
   name    = "my-cluster"
   network = upcloud_network.example.id
   zone    = var.zone
+}
 
-  # Node group allows you to create a given amount of worker nodes with common set of customizations
-  node_group {
-    # Amount of worker nodes in this group
-    count    = 2
+# Create a node group for your cluster
+# Node group is a group of worker nodes that are created based on the same template
+# You can have multiple node groups with different configurations in your cluster
+resource "upcloud_kubernetes_node_group" "group" {
+  name       = "medium"
 
-    # Group name
-    name     = "maingroup"
+  // All nodes in this group will be joined to this cluster
+  cluster    = upcloud_kubernetes_cluster.example.id
 
-    # Plan for each worker node in this group
-    plan     = data.upcloud_kubernetes_plan.small.description
+  // The amount of created nodes (servers)
+  node_count = 2
 
-    # Keys that will be added to `authorized_keys` file on each worker node; allows you to SSH into the worker node if needed
-    ssh_keys = ["ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC12QhxQ0h3LeBILTNhQOOva6WsRG1Lk5urtCZt00I1c16mKF3Y1d1F4qFPgPOnjfr80XhkNnRAMArwdBbCJ/iqDPsYk6hhJH6FVgRafk3C6OwyeqLe3EuzzcjLYWP+9U/r6hfsTcSp9ndPHVad4mn970iz45wfSAGzk0jb9IcXo/2pH/T8YByCRPg3+OzAL8dDRAT/qVH+cM+xTnZHo47XNhFLR/PavWtV0vgYmjem32qdx4qdFGI5nLdh8+e2nGPd2f28z8qQkHRteORUfTYTmnWc2oqNSL7mapsRia2F1t83rKzHJpMoNUXzDnIDcGGb8Zhvo1+epc/B2lUV6OB+/aTrfYp0T/PQTBHMJBLFbl4avEEUBFjS/bR8pvYeR+YEzl0ou4j65zVJOL1vezX/j+fNYrgxI4IN18o3WBmS6vuUDlRFStjsxLGAKfoiwDMHo96M4bCuVBbICqGqjjjrb7WnalQzEmMAeCqjcs5q/Wr1T0X5Lv1+TulYBjNHgl2HhgO5tl+Ljthu3zad1+N6oy5ofxrNbFUOwyGmv4b1zGNksYG55s5XC1+kPBQhg0fFS1c5/M4kaf5a/thaW6RtmuzbMr5S01EUpMmh1+ygwgA8rcniPFW0ruebUcBktAq/K+1DE9a+JfCmqYYXgly0CGgk0+NYzCgi3suot1Emlw== admin@user.com"]
+  // Plan for each node; you can check available plans with upcloud CLI tool (`upctl server plans`) or by making a call to API (https://developers.upcloud.com/1.3/7-plans/)
+  plan       = "2xCPU-4GB"
 
-    # Labels that will be added to each node in the group
-    labels = {
-      managedBy = "terraform"
-    }
-
-    # Arguments that will be passed to kubelet CLI for each of the worker nodes in this group
-    # WARNING - those arguments are passed without any validation; using invalid arguments will prevent your worker nodes from being functional
-    # Use this only if you know exactly what you are doing
-    kubelet_args = {
-      arg1 = "arg1value"
-    }
-
-    # Kubernetes taint that will be added to each node in the group.
-    taint {
-      effect = "NoExecute"
-      key = "taintKey"
-      value = "taintValue"
-    }
+  // Each node in this group will have the following labels
+  labels = {
+    managedBy = "terraform"
   }
 
-  # Another group of worker nodes
-  node_group {
-    count    = 2
-    name     = "secondarygroup"
-    plan     = data.upcloud_kubernetes_plan.small.description
-    ssh_keys = ["ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC12QhxQ0h3LeBILTNhQOOva6WsRG1Lk5urtCZt00I1c16mKF3Y1d1F4qFPgPOnjfr80XhkNnRAMArwdBbCJ/iqDPsYk6hhJH6FVgRafk3C6OwyeqLe3EuzzcjLYWP+9U/r6hfsTcSp9ndPHVad4mn970iz45wfSAGzk0jb9IcXo/2pH/T8YByCRPg3+OzAL8dDRAT/qVH+cM+xTnZHo47XNhFLR/PavWtV0vgYmjem32qdx4qdFGI5nLdh8+e2nGPd2f28z8qQkHRteORUfTYTmnWc2oqNSL7mapsRia2F1t83rKzHJpMoNUXzDnIDcGGb8Zhvo1+epc/B2lUV6OB+/aTrfYp0T/PQTBHMJBLFbl4avEEUBFjS/bR8pvYeR+YEzl0ou4j65zVJOL1vezX/j+fNYrgxI4IN18o3WBmS6vuUDlRFStjsxLGAKfoiwDMHo96M4bCuVBbICqGqjjjrb7WnalQzEmMAeCqjcs5q/Wr1T0X5Lv1+TulYBjNHgl2HhgO5tl+Ljthu3zad1+N6oy5ofxrNbFUOwyGmv4b1zGNksYG55s5XC1+kPBQhg0fFS1c5/M4kaf5a/thaW6RtmuzbMr5S01EUpMmh1+ygwgA8rcniPFW0ruebUcBktAq/K+1DE9a+JfCmqYYXgly0CGgk0+NYzCgi3suot1Emlw== admin@user.com"]
-
-    labels = {
-      managedBy = "also_terraform"
-    }
+  // Each node in this group will have this taint
+  taint {
+    effect = "NoExecute"
+    key    = "taintKey"
+    value  = "taintValue"
   }
+}
+
+
+data "upcloud_kubernetes_cluster" "example" {
+  id = upcloud_kubernetes_cluster.example.id
 }
 
 # With `hashicorp/local` Terraform provider one can output the kubeconfig to a file. The file can be easily
