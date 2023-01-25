@@ -42,6 +42,11 @@ resource "upcloud_kubernetes_node_group" "group" {
     key    = "taintKey"
     value  = "taintValue"
   }
+
+  // Each node in this group will have this key added to authorized keys (for "debian" user)
+  ssh_keys = [
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC12QhxQ0h3LeBILTNhQOOva6WsRG1Lk5urtCZt00I1c16mKF3Y1d1F4qFPgPOnjfr80XhkNnRAMArwdBbCJ/iqDPsYk6hhJH6FVgRafk3C6OwyeqLe3EuzzcjLYWP+9U/r6hfsTcSp9ndPHVad4mn970iz45wfSAGzk0jb9IcXo/2pH/T8YByCRPg3+OzAL8dDRAT/qVH+cM+xTnZHo47XNhFLR/PavWtV0vgYmjem32qdx4qdFGI5nLdh8+e2nGPd2f28z8qQkHRteORUfTYTmnWc2oqNSL7mapsRia2F1t83rKzHJpMoNUXzDnIDcGGb8Zhvo1+epc/B2lUV6OB+/aTrfYp0T/PQTBHMJBLFbl4avEEUBFjS/bR8pvYeR+YEzl0ou4j65zVJOL1vezX/j+fNYrgxI4IN18o3WBmS6vuUDlRFStjsxLGAKfoiwDMHo96M4bCuVBbICqGqjjjrb7WnalQzEmMAeCqjcs5q/Wr1T0X5Lv1+TulYBjNHgl2HhgO5tl+Ljthu3zad1+N6oy5ofxrNbFUOwyGmv4b1zGNksYG55s5XC1+kPBQhg0fFS1c5/M4kaf5a/thaW6RtmuzbMr5S01EUpMmh1+ygwgA8rcniPFW0ruebUcBktAq/K+1DE9a+JfCmqYYXgly0CGgk0+NYzCgi3suot1Emlw== admin@user.com"
+  ]
 }
 
 
