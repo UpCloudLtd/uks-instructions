@@ -1,43 +1,37 @@
-# Welcome to UKS Alpha!
+# Welcome to UKS Closed Beta!
 
 This repository contains sample configurations for Terraform and Kubernetes manifests to get started with our UpCloud Kubernetes Service (UKS).
 
 Note that this repository is still evolving. Please check back during the test period and also familiarise yourself with [the known issues](KNOWN_ISSUES.md)!
 
-## UI
+## Creating your first cluster
 
-### Creating Your First Cluster
+### UI
+The simplest way to create a cluster is to use our Control Panel. You can do so by following these steps:
 
-* Login to the UpCloud Hub using your account linked with the Alpha test
-* Navigate to the `Kubernetes` option in the menu on your left
-* Click `Create Cluster`
-* The Alpha test is being run in a single zone, and the option has been pre-chosen for you
-* Select a Private Network for your Worker Nodes. (If you need more information about creating a network, a link has 
-  been provided with more information) **NB!** Make sure to use a valid range (see [KNOWN_ISSUES.md](KNOWN_ISSUES.md#Networking)). This network will need to be created in the same zone as the Alpha tests: `de-fra1`
-* Provide a name for your cluster and click `Next`
-* Create a Node Group
-  * Groups of worker nodes with identical image templates are organized for convenience
-  * Here you can provide: `Name`, `Number of Nodes`, `Worker Node Plan`
-  * Once you have created the Node Group, you can click it to provide more advanced options like: `Labels` and `SSH Key`
-* When you are ready, click `Create`!
+* Log in to the [UpCloud Control Panel](https://hub.upcloud.com) (you must use an account that participates in the Closed Beta)
+* Go to `Kubernetes` section using the left-hand side menu
+* Click `Create new cluster`
+* The Closed Beta test is being run in a single zone, and the option has been pre-chosen for you
+* Select a Private Network for your Worker Nodes. This network will need to be created in the same zone as the Alpha tests: de-fra1
+* Create a node group; node group is a group of workers with identical image templates.
+* Name your cluster
+* Click `Create` button
 * Cluster creation will take a few minutes as worker nodes are being provisioned and a DNS record is prepared
-* When the cluster is `Running`, you can download your cluster's `KubeConfig`
-  * This allows you to access your cluster via the command line
+* When the cluster is Running, you can download your cluster's `KubeConfig` file; it allows you to access your cluster easily via command line
+
+### Alternatives
+You can also create a cluser using the following ways:
+* Terraform - see [terraform/README.md](terraform/README.md) for more precise instructions
+* Direct API access - see [openapi/openapi.yaml](openapi/openapi.yaml) for UKS Closed Beta API documentation; authentication can be achieved with [these](https://developers.upcloud.com/1.3/2-architecture/#authentication) instructions
+
+
 
 ### Troubleshooting
 
 * Check [KNOWN_ISSUES.md](KNOWN_ISSUES.md)
 * If you are attempting to access your cluster with a brand new `KubeConfig` and receive an error `no route to host`, this means that the DNS has not been fully configured, and you will need to wait a few more minutes.
   * Alternatively, you can flush your local DNS cache with: `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder`
-##  Terraform
-
-See [terraform/README.md](terraform/README.md).
-
-## API
-
-OpenAPI 3.0.3 specification for the Alpha API can be found in [openapi/openapi.yaml](openapi/openapi.yaml).
-
-Authentication can be achieved with [these](https://developers.upcloud.com/1.3/2-architecture/#authentication) instructions.
 
 ### Kubeconfig
 
