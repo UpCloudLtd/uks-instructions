@@ -32,19 +32,11 @@ You can also create a cluser using the following ways:
 * Check [KNOWN_ISSUES.md](KNOWN_ISSUES.md)
 * If you are attempting to access your cluster with a brand new `KubeConfig` and receive an error `no route to host`, this means that the DNS has not been fully configured, and you will need to wait a few more minutes.
   * Alternatively, you can flush your local DNS cache with: `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder`
+* If you use Terraform and you forgot to add `ignore_changes=[router]` meta argument, Terraform will detach router from your network making nodes in the cluster unavailable. To fix it you can go to [Control Panel routers page](https://hub.upcloud.com/networks/routers) and manually attach your network (the one you created with TF) to the router (it should be named as `<cluster-name>-data-plane`).
 
 ### Kubeconfig
 
-Kubeconfig can be extacted from the API with a little help from `jq` as follows:
-```shell
-curl \
-  --request GET \
-  --url https://api.upcloud.com/1.3/kubernetes/11111111-1111-1111-1111-111111111111/kubeconfig \
-  --header 'Authorization: Basic FAKE' \
-  --header 'Content-Type: application/json' \
-  --silent \
-  | jq --raw-output '.kubeconfig'
-```
+You can get your kubeconfig by going to the 
 
 ## Exposing Services
 
