@@ -7,6 +7,12 @@ resource "upcloud_network" "example" {
     dhcp    = true
     family  = "IPv4"
   }
+
+  # UpCloud Kubernetes Service will add a router to this network to ensure cluster networking is working as intended.
+  # You need to ignore changes to it, otherwise TF will attempt to detach the router on subsequent applies
+  lifecycle {
+    ignore_changes = [router]
+  }
 }
 
 # Create a cluster
@@ -30,6 +36,9 @@ resource "upcloud_kubernetes_node_group" "group" {
 
   // Plan for each node; you can check available plans with upcloud CLI tool (`upctl server plans`) or by making a call to API (https://developers.upcloud.com/1.3/7-plans/)
   plan       = "2xCPU-4GB"
+
+  // With `anti_affinity` set to true, UKS will attempt to deploy nodes in this group to different compute hosts
+  anti_affinity = true
 
   // Each node in this group will have the following labels
   labels = {
