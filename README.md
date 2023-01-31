@@ -36,7 +36,8 @@ You can also create a cluser using the following ways:
 
 ### Kubeconfig
 
-You can get your kubeconfig by going to the 
+You can get your kubeconfig by going to your cluster details page in [Control Panel](https://hub.upcloud.com/kubernetes).
+Alternatively, if you use Terraform you can leverage `local_file` provider to create kubeconfig file after the cluster is deleted ([see terraform example](terraform/main.tf))
 
 ## Exposing Services
 
