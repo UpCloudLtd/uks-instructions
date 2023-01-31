@@ -1,6 +1,7 @@
 # Cluster configuration
 
 - You cannot specify control plane size. In the Closed Beta control plane is run as a standalone instance.
+- You need to wait for cluster to get into `running` state before attempting to scale node groups or deleting the cluster, otherwise some resources might not be cleaned up properly
 
 # UI
 
