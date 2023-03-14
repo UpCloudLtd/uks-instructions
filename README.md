@@ -1,8 +1,8 @@
-# Welcome to UKS Closed Beta!
+# UKS beta
 
 This repository contains sample configurations for Terraform and Kubernetes manifests to get started with our UpCloud Kubernetes Service (UKS).
 
-Note that this repository is still evolving. Please check back during the test period and also familiarise yourself with [the known issues](KNOWN_ISSUES.md)!
+Note that this repository is still evolving. Please check back during the beta period and also familiarise yourself with [the known issues](KNOWN_ISSUES.md).
 
 ## Creating your first cluster
 
