@@ -1,11 +1,10 @@
 # Cluster configuration
 
-- You cannot specify control plane size. In the Closed Beta control plane is run as a standalone instance.
+- You cannot specify control plane size. In the beta control plane is run as a standalone instance.
 - You need to wait for cluster to get into `running` state before attempting to scale node groups or deleting the cluster, otherwise some resources might not be cleaned up properly
 
 # UI
 
-- Upon cluster creation, the UI will show cluster status as "unknown" for some time; it should get to "running" state after a while.
 - Upon cluster deletion, the UI might show cluster status as "running".
 
 # Terraform

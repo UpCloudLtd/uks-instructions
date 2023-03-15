@@ -1,24 +1,24 @@
-# Welcome to UKS Closed Beta!
+# UKS beta
 
 This repository contains sample configurations for Terraform and Kubernetes manifests to get started with our UpCloud Kubernetes Service (UKS).
 
-Note that this repository is still evolving. Please check back during the test period and also familiarise yourself with [the known issues](KNOWN_ISSUES.md)!
+Note that this repository is still evolving. Please check back during the beta period and also familiarise yourself with [the known issues](KNOWN_ISSUES.md).
 
 ## Creating your first cluster
 
 ### UI
 The simplest way to create a cluster is to use our Control Panel. You can do so by following these steps:
 
-* Log in to the [UpCloud Control Panel](https://hub.upcloud.com) (you must use an account that participates in the Closed Beta)
-* Go to `Kubernetes` section using the left-hand side menu
-* Click `Create new cluster`
-* The Closed Beta test is being run in a single zone, and the option has been pre-chosen for you
-* Select a Private Network for your Worker Nodes. This network will need to be created in the same zone as the Alpha tests: de-fra1
-* Create a node group; node group is a group of workers with identical image templates.
-* Name your cluster
-* Click `Create` button
-* Cluster creation will take a few minutes as worker nodes are being provisioned and a DNS record is prepared
-* When the cluster is Running, you can download your cluster's `KubeConfig` file; it allows you to access your cluster easily via command line
+* Log in to the [UpCloud Control Panel](https://hub.upcloud.com).
+* Go to `Kubernetes` page using the left-hand side menu.
+* Click `Create new cluster`.
+* The beta is being run on a two zones: 🇩🇪 `de-fra1` and 🇫🇮 `fi-hel2`.
+* Select a Private Network for your Worker Nodes. This network should be in the same zone as the cluster you are creating. The network can not be connected to an existing cluster, can not have an attached router, and should have DHCP enabled with default route from DHCP disabled. For IP network of your SDN network, you can use for example `172.24.1.0/24`.
+* Create a node group or use the default node-group; node group is a group of workers with identical image templates.
+* Name your cluster.
+* Click `Create` button.
+* Cluster creation will take a few minutes as worker nodes are being provisioned and a DNS record is prepared.
+* When the cluster is running, you can download your cluster's kubeconfig file; it allows you to access your cluster easily via command line with [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl). See [Exposing Services](#exposing-services) for example on deploying an _Hello UKS_ application to your newly created cluster.
 
 ### Alternatives
 You can also create a cluser using the following ways:
