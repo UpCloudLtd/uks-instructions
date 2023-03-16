@@ -11,6 +11,10 @@ not be cleaned up properly
 fully configured, and you will need to wait a few more minutes. Alternatively, you can flush your local DNS cache with:
 `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder` (or the alike)
 
+## Load balancing
+
+- Network configuration for automatically provisioned load balancers is not supported yet. Internal load balancers cannot be used.
+
 ## UI
 
 - Upon cluster deletion, the UI might show cluster status as "running".
