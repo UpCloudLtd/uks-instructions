@@ -14,4 +14,4 @@
 
 # Security
 
-- Currently cluster users have wider permissions than we would hope. CSI user within the cluster has access to all the servers within the main account and sub accounts can use these credentials to gain wider access than would be normally allowed. We will be limiting this before the public beta begins.
+- Currently cluster users have wider permissions than we would hope. CSI user within the cluster has access to all the servers within the main account and sub accounts can use these credentials to gain wider access than would be normally allowed. We will be limiting this during the public beta.
