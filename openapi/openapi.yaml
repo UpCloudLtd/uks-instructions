@@ -4,20 +4,33 @@ info:
     email: hello@upcloud.com
     name: UpCloud Orchestration team
     url: https://github.com/UpCloudLtd/
-  description: API for UpCloud Kubernetes Service (UKS), available under /1.3/kubernetes
-  title: UpCloud Kubernetes Service
-  version: 0.7.0
+  description: |
+    **This is a beta feature, please contact us if you have questions or run into any problems!**
+    
+    Kubernetes is a container orchestration system for automating, managing and scaling software deployment.
+
+    UpCloud Managed Kubernetes allows you to easily create Kubernetes clusters without having to take care about low level details.
+  title: Managed Kubernetes
+  version: 0.8.0
 servers:
   - description: UpCloud API
     url: "https://api.upcloud.com/1.3/kubernetes"
 paths:
   /:
     get:
-      description: Get a list of clusters
-      operationId: getClusters
+      description: List clusters
+      summary: |
+        Returns a list of Kubernetes clusters.
+      operationId: listClusters
       responses:
         "200":
-          $ref: "#/components/responses/getClusters"
+          description: List clusters response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/cluster"
         "400":
           $ref: "#/components/responses/badRequest"
         "401":
@@ -27,13 +40,23 @@ paths:
       tags:
         - cluster
     post:
-      description: Create a new cluster
-      operationId: postCluster
+      description: Create cluster
+      summary: |
+        Creates a new Kubernetes cluster.
+      operationId: createCluster
       requestBody:
-        $ref: "#/components/requestBodies/postCluster"
+        description: Create cluster request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/cluster"
       responses:
         "201":
-          $ref: "#/components/responses/postCluster"
+          description: Create cluster response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/cluster"
         "400":
           $ref: "#/components/responses/badRequest"
         "401":
@@ -48,11 +71,13 @@ paths:
         - cluster
   /{uuid}:
     delete:
-      description: Delete an existing cluster
+      description: Delete cluster
+      summary: |
+        Deletes an existing Kubernetes cluster by given `{uuid}`.
       operationId: deleteCluster
       responses:
         "202":
-          $ref: "#/components/responses/deleteCluster"
+          $ref: "#/components/responses/accepted"
         "401":
           $ref: "#/components/responses/unAuthorized"
         "404":
@@ -62,11 +87,17 @@ paths:
       tags:
         - cluster
     get:
-      description: Get an existing cluster
-      operationId: getCluster
+      description: Get cluster details
+      summary: |
+        Returns Kubernetes cluster details by given `{uuid}`.
+      operationId: getClusterDetails
       responses:
         "200":
-          $ref: "#/components/responses/getCluster"
+          description: Get cluster details response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/cluster"
         "400":
           $ref: "#/components/responses/badRequest"
         "401":
@@ -78,14 +109,27 @@ paths:
       tags:
         - cluster
     parameters:
-      - $ref: "#/components/parameters/uuid"
+      - $ref: "#/components/parameters/uuidParameter"
   /{uuid}/kubeconfig:
     get:
-      description: Get kubeconfig of a cluster
-      operationId: getClusterKubeconfig
+      description: Get kubeconfig
+      summary: |
+        Returns kubeconfig for Kubernetes cluster by given `{uuid}`.
+        
+        See https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/ .
+      operationId: getKubeconfig
       responses:
         "200":
-          $ref: "#/components/responses/getClusterKubeconfig"
+          description: Get kubeconfig response
+          content:
+            application/json:
+              schema:
+                properties:
+                  kubeconfig:
+                    $ref: "#/components/schemas/kubeconfig"
+                required:
+                  - kubeconfig
+                type: object
         "401":
           $ref: "#/components/responses/unAuthorized"
         "404":
@@ -95,14 +139,24 @@ paths:
       tags:
         - cluster
     parameters:
-      - $ref: "#/components/parameters/uuid"
+      - $ref: "#/components/parameters/uuidParameter"
   /{uuid}/node-groups:
     get:
-      description: Get existing node groups of a cluster
-      operationId: getNodeGroups
+      description: List node groups
+      summary: |
+        Returns a list of available node groups of an existing Kubernetes cluster. Cluster is identified by given {uuid}.
+        
+        A node group is a uniform set of worker nodes attached to a cluster.
+      operationId: listNodeGroups
       responses:
         "200":
-          $ref: "#/components/responses/getNodeGroups"
+          description: List node groups response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/nodeGroup"
         "401":
           $ref: "#/components/responses/unAuthorized"
         "404":
@@ -112,13 +166,23 @@ paths:
       tags:
         - nodeGroup
     post:
-      description: Create a node group to a cluster
-      operationId: postNodeGroup
+      description: Create node group
+      summary: |
+        Creates a new node group to an existing Kubernetes cluster. Cluster is identified by given {uuid}.
+      operationId: createNodeGroup
       requestBody:
-        $ref: "#/components/requestBodies/postNodeGroup"
+        description: Create node group request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/nodeGroup"
       responses:
         "201":
-          $ref: "#/components/responses/postNodeGroup"
+          description: Create node group response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/nodeGroup"
         "401":
           $ref: "#/components/responses/unAuthorized"
         "404":
@@ -130,14 +194,20 @@ paths:
       tags:
         - nodeGroup
     parameters:
-      - $ref: "#/components/parameters/uuid"
-  /{uuid}/node-groups/{name}:
+      - $ref: "#/components/parameters/uuidParameter"
+  /{uuid}/node-groups/{node_group_name}:
     get:
-      description: Get an existing node group of a cluster
-      operationId: getNodeGroup
+      description: Get node group details
+      summary: |
+        Returns node group details by given {node_group_name}. Cluster is identified by given {uuid}.
+      operationId: getNodeGroupDetails
       responses:
         "200":
-          $ref: "#/components/responses/getNodeGroup"
+          description: Get node group details response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/nodeGroup"
         "401":
           $ref: "#/components/responses/unAuthorized"
         "404":
@@ -147,11 +217,13 @@ paths:
       tags:
         - nodeGroup
     delete:
-      description: Delete a node group from a cluster
+      description: Delete node group
+      summary: |
+        Deletes existing node group by given Kubernetes cluster `{uuid}` and node group `{name}`.
       operationId: deleteNodeGroup
       responses:
         "202":
-          $ref: "#/components/responses/deleteNodeGroup"
+          $ref: "#/components/responses/accepted"
         "401":
           $ref: "#/components/responses/unAuthorized"
         "404":
@@ -161,13 +233,28 @@ paths:
       tags:
         - nodeGroup
     patch:
-      description: Patch an existing node group of a cluster
-      operationId: patchNodeGroup
+      description: Modify node group
+      summary: |
+        Modifies an existing node group by given {node_group_name}. Cluster is identified by given {uuid}.
+      operationId: modifyNodeGroup
       requestBody:
-        $ref: "#/components/requestBodies/patchNodeGroup"
+        description: Modify node group request
+        content:
+          application/json:
+            schema:
+              properties:
+                count:
+                  $ref: "#/components/schemas/nodeGroupCount"
+              maxProperties: 1
+              required:
+                - count
       responses:
         "200":
-          $ref: "#/components/responses/patchNodeGroup"
+          description: Modify node group response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/nodeGroup"
         "401":
           $ref: "#/components/responses/unAuthorized"
         "404":
@@ -179,680 +266,319 @@ paths:
       tags:
         - nodeGroup
     parameters:
-      - $ref: "#/components/parameters/uuid"
-      - $ref: "#/components/parameters/name"
+      - $ref: "#/components/parameters/uuidParameter"
+      - $ref: "#/components/parameters/nodeGroupNameParameter"
+  /versions:
+    get:
+      description: List Kubernetes versions
+      summary: |
+        Returns a list of available Kubernetes versions.
+      operationId: listVersions
+      responses:
+        "200":
+          description: List Kubernetes versions response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/version"
+        "401":
+          $ref: "#/components/responses/unAuthorized"
+        default:
+          $ref: "#/components/responses/internalServerError"
+      tags:
+        - version
 components:
   parameters:
-    uuid:
-      description: UUID
+    uuidParameter:
+      description: Path parameter for cluster UUID
       in: path
       name: uuid
       required: true
       schema:
-        $ref: "#/components/schemas/uuid"
-      x-go-name: "parameterUuid"
-    name:
-      description: Name
+        format: uuid
+        type: string
+    nodeGroupNameParameter:
+      description: Path parameter for node group name
       in: path
-      name: name
+      name: node_group_name
       required: true
       schema:
-        $ref: "#/components/schemas/name"
-      x-go-name: "parameterName"
-  requestBodies:
-    postCluster:
-      content:
-        application/json:
-          example:
-            name: example-cluster
-            network: 33333333-3333-3333-333333333333
-            network_cidr: 172.16.0.0/24
-            node_groups:
-              - count: 4
-                kubelet_args:
-                  - key: log-flush-frequency
-                    value: 5s
-                labels:
-                  - key: managedBy
-                    value: exampleDevelopmentTeam
-                  - key: environment
-                    value: development
-                name: small
-                plan: K8S-2xCPU-4GB
-                ssh_keys:
-                  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCDxPPyWRTVHYOOaCE/gqDzcdJFZdo1mD8k+BBvZ4an/khT+rzJGT/K1kvxs1vS1AMzaVbuWH1bLVk8XVDVJ3J7Rf76E50O1mj3+SWW81bjneVlAxw7DRoxZInFio7TMFTt6eSRkOGQ2GVpvkePgunVZsk+XE13fSnthqS1TiiivnmaNXsaVIOSZICzTWVKqRz1XVR4fdyKJxEpFhHCIu0ui9SeB887IdcS3KshvNqJo3Jm0LmBLL1vzcbucc7T02wiqvdDSPO7TO8Wlc7sJXwmMImEDBkPYQTHmeOqsKbW0OiGuJniwg93pBt0BqNhn3gxtYLrmjha+PqO9gVR6XkV
-                storage: 01000000-0000-4000-8000-000160010100
-                taints:
-                  - effect: NoSchedule
-                    key: environment
-                    value: development
-              - count: 8
-                kubelet_args:
-                  - key: log-flush-frequency
-                    value: 15s
-                labels:
-                  - key: managedBy
-                    value: exampleStagingTeam
-                  - key: environment
-                    value: staging
-                name: medium
-                plan: K8S-4xCPU-8GB
-                ssh_keys:
-                  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCDxPPyWRTVHYOOaCE/gqDzcdJFZdo1mD8k+BBvZ4an/khT+rzJGT/K1kvxs1vS1AMzaVbuWH1bLVk8XVDVJ3J7Rf76E50O1mj3+SWW81bjneVlAxw7DRoxZInFio7TMFTt6eSRkOGQ2GVpvkePgunVZsk+XE13fSnthqS1TiiivnmaNXsaVIOSZICzTWVKqRz1XVR4fdyKJxEpFhHCIu0ui9SeB887IdcS3KshvNqJo3Jm0LmBLL1vzcbucc7T02wiqvdDSPO7TO8Wlc7sJXwmMImEDBkPYQTHmeOqsKbW0OiGuJniwg93pBt0BqNhn3gxtYLrmjha+PqO9gVR6XkV
-                storage: 01000000-0000-4000-8000-000160010100
-                taints:
-                  - effect: NoSchedule
-                    key: environment
-                    value: staging
-            zone: de-fra1
-          schema:
-            $ref: "#/components/schemas/cluster"
-      description: postCluster requestBody
-    patchNodeGroup:
-      content:
-        application/json:
-          example:
-            count: 16
-          schema:
-            properties:
-              count:
-                $ref: "#/components/schemas/count"
-            required:
-              - count
-      description: patchNodeGroup requestBody
-      x-go-name: "patchNodeGroupRequest"
-    postNodeGroup:
-      content:
-        application/json:
-          example:
-            count: 4
-            kubelet_args:
-              - key: log-flush-frequency
-                value: 5s
-            labels:
-              - key: managedBy
-                value: exampleDevelopmentTeam
-              - key: environment
-                value: development
-            name: small
-            plan: K8S-2xCPU-4GB
-            ssh_keys:
-              - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCDxPPyWRTVHYOOaCE/gqDzcdJFZdo1mD8k+BBvZ4an/khT+rzJGT/K1kvxs1vS1AMzaVbuWH1bLVk8XVDVJ3J7Rf76E50O1mj3+SWW81bjneVlAxw7DRoxZInFio7TMFTt6eSRkOGQ2GVpvkePgunVZsk+XE13fSnthqS1TiiivnmaNXsaVIOSZICzTWVKqRz1XVR4fdyKJxEpFhHCIu0ui9SeB887IdcS3KshvNqJo3Jm0LmBLL1vzcbucc7T02wiqvdDSPO7TO8Wlc7sJXwmMImEDBkPYQTHmeOqsKbW0OiGuJniwg93pBt0BqNhn3gxtYLrmjha+PqO9gVR6XkV
-            storage: 01000000-0000-4000-8000-000160010100
-            taints:
-              - effect: NoSchedule
-                key: environment
-                value: development
-          schema:
-            $ref: "#/components/schemas/nodeGroup"
-      description: postNodeGroup requestBody
+        $ref: "#/components/schemas/nodeGroupName"
   responses:
+    accepted:
+      description: Accepted
+      content:
+        application/json:
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
     badRequest:
+      description: Bad request
       content:
-        application/json:
+        application/problem+json:
           example:
-            error:
-              error_code: InvalidRequest
-              error_message: payload validation failed
+            type: https://developers.upcloud.com/1.3/errors#INVALID_REQUEST
+            title: payload validation failed
+            correlation_id: 01GSCRT0RDS9EB2HMMMP5550ZR
+            status: 400
           schema:
-            properties:
-              error:
-                $ref: "#/components/schemas/error"
-            required:
-              - error
-      description: 400 Bad request
-    deleteCluster:
-      content:
-        application/json:
-          example:
-            message: "deletion started for cluster 11111111-1111-1111-1111-1111"
-          schema:
-            properties:
-              message:
-                $ref: "#/components/schemas/message"
-            type: object
-      description: 202 deleteCluster response
-    deleteNodeGroup:
-      content:
-        application/json:
-          example:
-            message: "deletion started for node group 'small'"
-          schema:
-            properties:
-              message:
-                $ref: "#/components/schemas/message"
-            type: object
-      description: 202 deleteNodeGroup response
-    getCluster:
-      content:
-        application/json:
-          example:
-            name: example-cluster
-            network: 33333333-3333-3333-333333333333
-            network_cidr: 172.16.0.0/24
-            node_groups:
-              - count: 4
-                kubelet_args:
-                  - key: log-flush-frequency
-                    value: 5s
-                labels:
-                  - key: managedBy
-                    value: exampleDevelopmentTeam
-                  - key: environment
-                    value: development
-                name: small
-                plan: K8S-2xCPU-4GB
-                ssh_keys:
-                  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCDxPPyWRTVHYOOaCE/gqDzcdJFZdo1mD8k+BBvZ4an/khT+rzJGT/K1kvxs1vS1AMzaVbuWH1bLVk8XVDVJ3J7Rf76E50O1mj3+SWW81bjneVlAxw7DRoxZInFio7TMFTt6eSRkOGQ2GVpvkePgunVZsk+XE13fSnthqS1TiiivnmaNXsaVIOSZICzTWVKqRz1XVR4fdyKJxEpFhHCIu0ui9SeB887IdcS3KshvNqJo3Jm0LmBLL1vzcbucc7T02wiqvdDSPO7TO8Wlc7sJXwmMImEDBkPYQTHmeOqsKbW0OiGuJniwg93pBt0BqNhn3gxtYLrmjha+PqO9gVR6XkV
-                state: running
-                storage: 01000000-0000-4000-8000-000160010100
-                taints:
-                  - effect: NoSchedule
-                    key: environment
-                    value: development
-              - count: 8
-                kubelet_args:
-                  - key: log-flush-frequency
-                    value: 15s
-                labels:
-                  - key: managedBy
-                    value: exampleStagingTeam
-                  - key: environment
-                    value: staging
-                name: medium
-                plan: K8S-4xCPU-8GB
-                ssh_keys:
-                  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCDxPPyWRTVHYOOaCE/gqDzcdJFZdo1mD8k+BBvZ4an/khT+rzJGT/K1kvxs1vS1AMzaVbuWH1bLVk8XVDVJ3J7Rf76E50O1mj3+SWW81bjneVlAxw7DRoxZInFio7TMFTt6eSRkOGQ2GVpvkePgunVZsk+XE13fSnthqS1TiiivnmaNXsaVIOSZICzTWVKqRz1XVR4fdyKJxEpFhHCIu0ui9SeB887IdcS3KshvNqJo3Jm0LmBLL1vzcbucc7T02wiqvdDSPO7TO8Wlc7sJXwmMImEDBkPYQTHmeOqsKbW0OiGuJniwg93pBt0BqNhn3gxtYLrmjha+PqO9gVR6XkV
-                state: pending
-                storage: 01000000-0000-4000-8000-000160010100
-                taints:
-                  - effect: NoSchedule
-                    key: environment
-                    value: staging
-            uuid: 11111111-1111-1111-1111-111111111111
-            state: running
-            zone: de-fra1
-          schema:
-            $ref: "#/components/schemas/cluster"
-      description: 200 getCluster response
-    getClusterKubeconfig:
-      content:
-        application/json:
-          example:
-            kubeconfig: "apiVersion: v1\nclusters:\n- cluster:\n    certificate-authority-data: FAKEBASE64=\n    server: https://server\n  name: example-cluster\ncontexts:\n- context:\n    cluster: example-cluster\n    user: example-cluster-admin\n  name: example-cluster-admin@example-cluster\ncurrent-context: example-cluster-admin@example-cluster\nkind: Config\npreferences: {}\nusers:\n- name: example-cluster-admin\n  user:\n    client-certificate-data: FAKEBASE64=\n    client-key-data: FAKEBASE64=\n"
-          schema:
-            properties:
-              kubeconfig:
-                $ref: "#/components/schemas/kubeconfig"
-            required:
-              - kubeconfig
-            type: object
-      description: 200 getClusterKubeconfig response
-    getNodeGroup:
-      content:
-        application/json:
-          example:
-            count: 4
-            kubelet_args:
-              - key: log-flush-frequency
-                value: 5s
-            labels:
-              - key: managedBy
-                value: exampleDevelopmentTeam
-              - key: environment
-                value: development
-            name: small
-            plan: K8S-2xCPU-4GB
-            ssh_keys:
-              - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCDxPPyWRTVHYOOaCE/gqDzcdJFZdo1mD8k+BBvZ4an/khT+rzJGT/K1kvxs1vS1AMzaVbuWH1bLVk8XVDVJ3J7Rf76E50O1mj3+SWW81bjneVlAxw7DRoxZInFio7TMFTt6eSRkOGQ2GVpvkePgunVZsk+XE13fSnthqS1TiiivnmaNXsaVIOSZICzTWVKqRz1XVR4fdyKJxEpFhHCIu0ui9SeB887IdcS3KshvNqJo3Jm0LmBLL1vzcbucc7T02wiqvdDSPO7TO8Wlc7sJXwmMImEDBkPYQTHmeOqsKbW0OiGuJniwg93pBt0BqNhn3gxtYLrmjha+PqO9gVR6XkV
-            state: running
-            storage: 01000000-0000-4000-8000-000160010100
-            taints:
-              - effect: NoSchedule
-                key: environment
-                value: development
-          schema:
-            $ref: "#/components/schemas/nodeGroup"
-      description: 200 getNodeGroup response
-    getNodeGroups:
-      content:
-        application/json:
-          example:
-            - count: 4
-              kubelet_args:
-                - key: log-flush-frequency
-                  value: 5s
-              labels:
-                - key: managedBy
-                  value: exampleDevelopmentTeam
-                - key: environment
-                  value: development
-              name: small
-              plan: K8S-2xCPU-4GB
-              ssh_keys:
-                - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCDxPPyWRTVHYOOaCE/gqDzcdJFZdo1mD8k+BBvZ4an/khT+rzJGT/K1kvxs1vS1AMzaVbuWH1bLVk8XVDVJ3J7Rf76E50O1mj3+SWW81bjneVlAxw7DRoxZInFio7TMFTt6eSRkOGQ2GVpvkePgunVZsk+XE13fSnthqS1TiiivnmaNXsaVIOSZICzTWVKqRz1XVR4fdyKJxEpFhHCIu0ui9SeB887IdcS3KshvNqJo3Jm0LmBLL1vzcbucc7T02wiqvdDSPO7TO8Wlc7sJXwmMImEDBkPYQTHmeOqsKbW0OiGuJniwg93pBt0BqNhn3gxtYLrmjha+PqO9gVR6XkV
-              state: running
-              storage: 01000000-0000-4000-8000-000160010100
-              taints:
-                - effect: NoSchedule
-                  key: environment
-                  value: development
-            - count: 8
-              kubelet_args:
-                - key: log-flush-frequency
-                  value: 15s
-              labels:
-                - key: managedBy
-                  value: exampleStagingTeam
-                - key: environment
-                  value: staging
-              name: medium
-              plan: K8S-4xCPU-8GB
-              ssh_keys:
-                - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCDxPPyWRTVHYOOaCE/gqDzcdJFZdo1mD8k+BBvZ4an/khT+rzJGT/K1kvxs1vS1AMzaVbuWH1bLVk8XVDVJ3J7Rf76E50O1mj3+SWW81bjneVlAxw7DRoxZInFio7TMFTt6eSRkOGQ2GVpvkePgunVZsk+XE13fSnthqS1TiiivnmaNXsaVIOSZICzTWVKqRz1XVR4fdyKJxEpFhHCIu0ui9SeB887IdcS3KshvNqJo3Jm0LmBLL1vzcbucc7T02wiqvdDSPO7TO8Wlc7sJXwmMImEDBkPYQTHmeOqsKbW0OiGuJniwg93pBt0BqNhn3gxtYLrmjha+PqO9gVR6XkV
-              state: pending
-              storage: 01000000-0000-4000-8000-000160010100
-              taints:
-                - effect: NoSchedule
-                  key: environment
-                  value: staging
-          schema:
-            $ref: "#/components/schemas/nodeGroups"
-      description: 200 getNodeGroups response
-    getClusters:
-      content:
-        application/json:
-          example:
-            - name: example-cluster
-              network: 33333333-3333-3333-333333333333
-              network_cidr: 172.16.0.0/24
-              node_groups:
-                - count: 4
-                  kubelet_args:
-                    - key: log-flush-frequency
-                      value: 5s
-                  labels:
-                    - key: managedBy
-                      value: exampleDevelopmentTeam
-                    - key: environment
-                      value: development
-                  name: small
-                  plan: K8S-2xCPU-4GB
-                  ssh_keys:
-                    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCDxPPyWRTVHYOOaCE/gqDzcdJFZdo1mD8k+BBvZ4an/khT+rzJGT/K1kvxs1vS1AMzaVbuWH1bLVk8XVDVJ3J7Rf76E50O1mj3+SWW81bjneVlAxw7DRoxZInFio7TMFTt6eSRkOGQ2GVpvkePgunVZsk+XE13fSnthqS1TiiivnmaNXsaVIOSZICzTWVKqRz1XVR4fdyKJxEpFhHCIu0ui9SeB887IdcS3KshvNqJo3Jm0LmBLL1vzcbucc7T02wiqvdDSPO7TO8Wlc7sJXwmMImEDBkPYQTHmeOqsKbW0OiGuJniwg93pBt0BqNhn3gxtYLrmjha+PqO9gVR6XkV
-                  state: running
-                  storage: 01000000-0000-4000-8000-000160010100
-                  taints:
-                    - effect: NoSchedule
-                      key: environment
-                      value: development
-                - count: 8
-                  kubelet_args:
-                    - key: log-flush-frequency
-                      value: 15s
-                  labels:
-                    - key: managedBy
-                      value: exampleStagingTeam
-                    - key: environment
-                      value: staging
-                  name: medium
-                  plan: K8S-4xCPU-8GB
-                  ssh_keys:
-                    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCDxPPyWRTVHYOOaCE/gqDzcdJFZdo1mD8k+BBvZ4an/khT+rzJGT/K1kvxs1vS1AMzaVbuWH1bLVk8XVDVJ3J7Rf76E50O1mj3+SWW81bjneVlAxw7DRoxZInFio7TMFTt6eSRkOGQ2GVpvkePgunVZsk+XE13fSnthqS1TiiivnmaNXsaVIOSZICzTWVKqRz1XVR4fdyKJxEpFhHCIu0ui9SeB887IdcS3KshvNqJo3Jm0LmBLL1vzcbucc7T02wiqvdDSPO7TO8Wlc7sJXwmMImEDBkPYQTHmeOqsKbW0OiGuJniwg93pBt0BqNhn3gxtYLrmjha+PqO9gVR6XkV
-                  state: pending
-                  storage: 01000000-0000-4000-8000-000160010100
-                  taints:
-                    - effect: NoSchedule
-                      key: environment
-                      value: staging
-              uuid: 11111111-1111-1111-1111-111111111111
-              state: running
-              zone: de-fra1
-            - name: another-example-cluster
-              network: another33333333-3333-3333-333333333333
-              network_cidr: 172.16.0.0/24
-              node_groups:
-                - count: 4
-                  name: large
-                  plan: K8S-8xCPU-32GB
-                  ssh_keys:
-                    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCDxPPyWRTVHYOOaCE/gqDzcdJFZdo1mD8k+BBvZ4an/khT+rzJGT/K1kvxs1vS1AMzaVbuWH1bLVk8XVDVJ3J7Rf76E50O1mj3+SWW81bjneVlAxw7DRoxZInFio7TMFTt6eSRkOGQ2GVpvkePgunVZsk+XE13fSnthqS1TiiivnmaNXsaVIOSZICzTWVKqRz1XVR4fdyKJxEpFhHCIu0ui9SeB887IdcS3KshvNqJo3Jm0LmBLL1vzcbucc7T02wiqvdDSPO7TO8Wlc7sJXwmMImEDBkPYQTHmeOqsKbW0OiGuJniwg93pBt0BqNhn3gxtYLrmjha+PqO9gVR6XkV
-                  state: running
-                  storage: 01000000-0000-4000-8000-000160010100
-              uuid: 22222222-2222-2222-2222-222222222222
-              state: pending
-              zone: de-fra1
-          schema:
-            $ref: "#/components/schemas/clusters"
-      description: 200 getClusters response
+            $ref: "#/components/schemas/error"
     internalServerError:
+      description: Internal server error response
       content:
-        application/json:
+        application/problem+json:
           example:
-            error:
-              error_code: GenericError
-              error_message: Internal server error
+            type: https://developers.upcloud.com/1.3/errors#ERROR_GENERIC_ERROR
+            title: failed to get version.
+            correlation_id: 01GSCRT0RDS9EB2HMMMP5550ZR
+            status: 500
           schema:
-            properties:
-              error:
-                $ref: "#/components/schemas/error"
-            required:
-              - error
-      description: 500 Internal server error
+            $ref: "#/components/schemas/error"
     notFound:
+      description: Not found response
       content:
-        application/json:
+        application/problem+json:
           example:
-            error:
-              error_code: NotFound
-              error_message: No cluster found
+            type: https://developers.upcloud.com/1.3/errors#ERROR_NOT_FOUND
+            title: cluster not found.
+            correlation_id: 01GSCRT0RDS9EB2HMMMP5550ZR
+            status: 404
           schema:
-            properties:
-              error:
-                $ref: "#/components/schemas/error"
-            required:
-              - error
-      description: 404 Not found
-    postCluster:
-      content:
-        application/json:
-          example:
-            name: example-cluster
-            network: 33333333-3333-3333-333333333333
-            network_cidr: 172.16.0.0/24
-            node_groups:
-              - count: 4
-                kubelet_args:
-                  - key: log-flush-frequency
-                    value: 5s
-                labels:
-                  - key: managedBy
-                    value: exampleDevelopmentTeam
-                  - key: environment
-                    value: development
-                name: example-node-group-small
-                plan: K8S-2xCPU-4GB
-                ssh_keys:
-                  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCDxPPyWRTVHYOOaCE/gqDzcdJFZdo1mD8k+BBvZ4an/khT+rzJGT/K1kvxs1vS1AMzaVbuWH1bLVk8XVDVJ3J7Rf76E50O1mj3+SWW81bjneVlAxw7DRoxZInFio7TMFTt6eSRkOGQ2GVpvkePgunVZsk+XE13fSnthqS1TiiivnmaNXsaVIOSZICzTWVKqRz1XVR4fdyKJxEpFhHCIu0ui9SeB887IdcS3KshvNqJo3Jm0LmBLL1vzcbucc7T02wiqvdDSPO7TO8Wlc7sJXwmMImEDBkPYQTHmeOqsKbW0OiGuJniwg93pBt0BqNhn3gxtYLrmjha+PqO9gVR6XkV
-                state: pending
-                storage: 01000000-0000-4000-8000-000160010100
-                taints:
-                  - effect: NoSchedule
-                    key: environment
-                    value: development
-              - count: 8
-                kubelet_args:
-                  - key: log-flush-frequency
-                    value: 15s
-                labels:
-                  - key: managedBy
-                    value: exampleStagingTeam
-                  - key: environment
-                    value: staging
-                name: example-node-group-medium
-                plan: K8S-4xCPU-8GB
-                ssh_keys:
-                  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCDxPPyWRTVHYOOaCE/gqDzcdJFZdo1mD8k+BBvZ4an/khT+rzJGT/K1kvxs1vS1AMzaVbuWH1bLVk8XVDVJ3J7Rf76E50O1mj3+SWW81bjneVlAxw7DRoxZInFio7TMFTt6eSRkOGQ2GVpvkePgunVZsk+XE13fSnthqS1TiiivnmaNXsaVIOSZICzTWVKqRz1XVR4fdyKJxEpFhHCIu0ui9SeB887IdcS3KshvNqJo3Jm0LmBLL1vzcbucc7T02wiqvdDSPO7TO8Wlc7sJXwmMImEDBkPYQTHmeOqsKbW0OiGuJniwg93pBt0BqNhn3gxtYLrmjha+PqO9gVR6XkV
-                state: pending
-                storage: 01000000-0000-4000-8000-000160010100
-                taints:
-                  - effect: NoSchedule
-                    key: environment
-                    value: staging
-            uuid: 11111111-1111-1111-1111-111111111111
-            state: pending
-            zone: de-fra1
-          schema:
-            $ref: "#/components/schemas/cluster"
-      description: 201 postCluster response
-    patchNodeGroup:
-      content:
-        application/json:
-          example:
-            count: 16
-            kubelet_args:
-              - key: log-flush-frequency
-                value: 5s
-            labels:
-              - key: managedBy
-                value: exampleDevelopmentTeam
-              - key: environment
-                value: development
-            name: small
-            plan: K8S-2xCPU-4GB
-            ssh_keys:
-              - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCDxPPyWRTVHYOOaCE/gqDzcdJFZdo1mD8k+BBvZ4an/khT+rzJGT/K1kvxs1vS1AMzaVbuWH1bLVk8XVDVJ3J7Rf76E50O1mj3+SWW81bjneVlAxw7DRoxZInFio7TMFTt6eSRkOGQ2GVpvkePgunVZsk+XE13fSnthqS1TiiivnmaNXsaVIOSZICzTWVKqRz1XVR4fdyKJxEpFhHCIu0ui9SeB887IdcS3KshvNqJo3Jm0LmBLL1vzcbucc7T02wiqvdDSPO7TO8Wlc7sJXwmMImEDBkPYQTHmeOqsKbW0OiGuJniwg93pBt0BqNhn3gxtYLrmjha+PqO9gVR6XkV
-            state: running
-            storage: 01000000-0000-4000-8000-000160010100
-            taints:
-              - effect: NoSchedule
-                key: environment
-                value: development
-          schema:
-            $ref: "#/components/schemas/nodeGroup"
-      description: 200 patchNodeGroup response
-    postNodeGroup:
-      content:
-        application/json:
-          example:
-            count: 4
-            kubelet_args:
-              - key: log-flush-frequency
-                value: 5s
-            labels:
-              - key: managedBy
-                value: exampleDevelopmentTeam
-              - key: environment
-                value: development
-            name: small
-            plan: K8S-2xCPU-4GB
-            ssh_keys:
-              - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCDxPPyWRTVHYOOaCE/gqDzcdJFZdo1mD8k+BBvZ4an/khT+rzJGT/K1kvxs1vS1AMzaVbuWH1bLVk8XVDVJ3J7Rf76E50O1mj3+SWW81bjneVlAxw7DRoxZInFio7TMFTt6eSRkOGQ2GVpvkePgunVZsk+XE13fSnthqS1TiiivnmaNXsaVIOSZICzTWVKqRz1XVR4fdyKJxEpFhHCIu0ui9SeB887IdcS3KshvNqJo3Jm0LmBLL1vzcbucc7T02wiqvdDSPO7TO8Wlc7sJXwmMImEDBkPYQTHmeOqsKbW0OiGuJniwg93pBt0BqNhn3gxtYLrmjha+PqO9gVR6XkV
-            state: pending
-            storage: 01000000-0000-4000-8000-000160010100
-            taints:
-              - effect: NoSchedule
-                key: environment
-                value: development
-          schema:
-            $ref: "#/components/schemas/nodeGroup"
-      description: 201 postNodeGroup response
+            $ref: "#/components/schemas/error"
     unAuthorized:
+      description: Unauthorized response
       content:
-        application/json:
+        application/problem+json:
           example:
-            error:
-              error_code: InvalidCredentials
-              error_message: Authentication failed using the given username and password.
+            type: https://developers.upcloud.com/1.3/errors#AUTHENTICATION_FAILED
+            title: Authentication failed using the given username and password.
+            correlation_id: 01GSCRT0RDS9EB2HMMMP5550ZR
+            status: 401
           schema:
-            properties:
-              error:
-                $ref: "#/components/schemas/error"
-            required:
-              - error
-      description: 401 Unauthorized
+            $ref: "#/components/schemas/error"
     unProcessableEntity:
+      description: Unprocessable entity response
       content:
-        application/json:
+        application/problem+json:
           example:
-            error:
-              error_code: InvalidRequest
-              error_message: zone is not valid
+            type: https://developers.upcloud.com/1.3/errors#INVALID_REQUEST
+            title: zone is not valid
+            correlation_id: 01GSCRT0RDS9EB2HMMMP5550ZR
+            status: 422
           schema:
-            properties:
-              error:
-                $ref: "#/components/schemas/error"
-            required:
-              - error
-      description: 422 Unprocessable entity
+            $ref: "#/components/schemas/error"
   schemas:
     cluster:
       description: Kubenernetes cluster
       properties:
         name:
-          $ref: "#/components/schemas/name"
+          title: Kubernetes cluster
+          description: The name of the Kubernetes cluster must be unique within customer account.
+          example: example-cluster-1
+          allOf:
+            - $ref: "#/components/schemas/name"
         network:
-          $ref: "#/components/schemas/network"
+          title: Network UUID where node groups will provisioned. Must reside in Kubernetes cluster zone.
+          description: A valid network identifier in UUID format
+          format: uuid
+          type: string
         network_cidr:
-          $ref: "#/components/schemas/networkCIDR"
+          title: IP range of the given network.
+          description: IP range in CIDR format
+          pattern: ^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2])){1}$
+          example: 172.16.0.0/24
         node_groups:
-          $ref: "#/components/schemas/nodeGroups"
+          description: An array of 0 or more node group objects
+          type: array
+          items:
+            $ref: "#/components/schemas/nodeGroup"
         state:
-          allOf:
-            - $ref: "#/components/schemas/clusterState"
-          readOnly: true
+          $ref: "#/components/schemas/state"
         uuid:
-          allOf:
-            - $ref: "#/components/schemas/uuid"
-          readOnly: true
+          format: uuid
+          type: string
         zone:
-          $ref: "#/components/schemas/zone"
+          title: UpCloud zone to provision the Kubernetes cluster in
+          description: |
+            `de-fra1` / `fi-hel2`
+          minLength: 6
+          type: string
+          example: fi-hel2
       required:
         - name
         - network
+        - network_cidr
         - zone
       type: object
-    clusters:
-      description: List of Kubernetes clusters
-      items:
-        $ref: "#/components/schemas/cluster"
-      type: array
-    clusterState:
-      description: Cluster operational state
-      enum:
-        - failed
-        - pending
-        - running
-        - terminated
-        - terminating
-        - unknown
-      type: string
-    count:
-      description: Amount of nodes in a node group
-      format: int64
-      maximum: 16
-      minimum: 0
-      type: integer
-    description:
-      description: Plan description
-      type: string
-    effect:
-      description: Taint effect
-      enum:
-        - NoExecute
-        - NoSchedule
-        - PreferNoSchedule
-      type: string
     error:
       description: Response error
       properties:
-        error_code:
-          $ref: "#/components/schemas/errorCode"
-        error_message:
-          $ref: "#/components/schemas/errorMessage"
+        type:
+          $ref: "#/components/schemas/errorType"
+        title:
+          $ref: "#/components/schemas/errorTitle"
+        status:
+          $ref: "#/components/schemas/errorStatus"
+        correlation_id:
+          $ref: "#/components/schemas/errorCorrelationID"
       required:
-        - error_code
-        - error_message
+        - error
+        - type
+        - title
+        - status
+        - correlation_id
       type: object
-    errorCode:
-      description: Error code to identify the error type
+    errorType:
+      description: URI to a page describing the problem
       type: string
-    errorMessage:
-      description: Error message
+      example: "https://developers.upcloud.com/1.3/errors#ERROR_INVALID_REQUEST"
+    errorTitle:
+      description: human-readable description of the error
       type: string
-    key:
-      description: Key of a key-value pair
-      pattern: ^[a-zA-Z0-9]+$
+      example: "Zone is not valid, valid values: [de-fra1 fi-hel2]."
+    errorCorrelationID:
+      description: unique string that identifies the request that caused the error
       type: string
+      example: 01GSCRT0RDS9EB2HMMMP5550ZR
+    errorStatus:
+      description: HTTP Status code
+      type: integer
+      example: 422
     kubeconfig:
-      description: Kubeconfig
+      description: Kubeconfig for authenticating against the cluster API
       type: string
+      example: |
+        apiVersion: v1
+        clusters:
+          - cluster:
+              certificate-authority-data: BASE64
+              server: https://server:6443
+            name: example-cluster-1
+        contexts:
+          - context:
+              cluster: example-cluster-1
+              user: example-cluster-1-admin
+            name: example-cluster-1-admin@example-cluster-1
+        current-context: example-cluster-1-admin@example-cluster-1
+        kind: Config
+        preferences: {}
+        users:
+          - name: example-cluster-1-admin
+            user:
+              client-certificate-data: BASE64
+              client-key-data: BASE64
     kubeletArg:
       description: Kubelet argument presented as key-value pair
       properties:
         key:
-          $ref: "#/components/schemas/key"
+          title: Key representing the kubelet argument
+          example: log-flush-frequency
+          type: string
+          minLength: 1
+          maxLength: 253
         value:
-          $ref: "#/components/schemas/value"
+          title: Key representing the kubelet argument
+          example: 5s
+          type: string
+          minLength: 1
+          maxLength: 253
       required:
         - key
         - value
       type: object
-    kubeletArgs:
-      description: List of Kubelet arguments
-      items:
-        $ref: "#/components/schemas/kubeletArg"
-      type: array
     label:
-      description: Label for identifying node groups, presented as key-value pair
+      description: Label presented as a key-value pair for classifying the resource.
       properties:
         key:
-          $ref: "#/components/schemas/key"
+          title: Key representing the label
+          description: 1-63 letters, numbers, `-`, `_`, `.` & `/`. Cannot start or end with `-`, `_`, `.` & `/`
+          type: string
+          minLength: 1
+          maxLength: 63
+          example: team
         value:
-          $ref: "#/components/schemas/value"
+          title: Key representing the value
+          description: 0-63 letters, numbers, `-`, `_` & `.`. Cannot start or end with `-`, `_` & `.`
+          type: string
+          maxLength: 63
+          minLength: 0
+          example: development
       required:
         - key
+        - value
       type: object
-    labels:
-      description: List of labels
-      items:
-        $ref: "#/components/schemas/label"
-      type: array
-      uniqueItems: true
-    message:
-      description: Message
-      type: string
     name:
-      description: Name
+      minLength: 3
+      maxLength: 64
       pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
-      type: string
-    network:
-      description: Network UUID
-      minLength: 1
-      type: string
-    networkCIDR:
-      description: CIDR of the given network
       type: string
     nodeGroup:
       description: Node group for a Kubernetes cluster
       properties:
         count:
-          $ref: "#/components/schemas/count"
+          $ref: "#/components/schemas/nodeGroupCount"
         kubelet_args:
-          $ref: "#/components/schemas/kubeletArgs"
+          type: array
+          items:
+            $ref: "#/components/schemas/kubeletArg"
         labels:
-          $ref: "#/components/schemas/labels"
+          type: array
+          items:
+            $ref: "#/components/schemas/label"
         name:
-          $ref: "#/components/schemas/name"
+          $ref: "#/components/schemas/nodeGroupName"
         plan:
-          $ref: "#/components/schemas/description"
+          description: Plan to assign to a node group
+          type: string
+          example: 4xCPU-8GB
         ssh_keys:
-          $ref: "#/components/schemas/sshKeys"
+          type: array
+          items:
+            $ref: "#/components/schemas/sshKey"
         state:
-          allOf:
-            - $ref: "#/components/schemas/nodeGroupState"
-          readOnly: true
+          $ref: "#/components/schemas/state"
         storage:
-          $ref: "#/components/schemas/storage"
+          description: Storage template for node provisioning
+          format: uuid
+          type: string
+          default: 01000000-0000-4000-8000-000160010100
+          example: 01000000-0000-4000-8000-000160010100
         taints:
-          $ref: "#/components/schemas/taints"
+          type: array
+          items:
+            $ref: "#/components/schemas/taint"
         anti_affinity:
-          $ref: "#/components/schemas/antiAffinity"
+          description: Anti-affinity policy. Nodes will try to avoid underlying UpCloud hosts that already have nodes from the same noe group during the start or creation phase.
+          type: boolean
+          default: false
+          example: false
       required:
         - count
         - name
         - plan
       type: object
-    nodeGroups:
-      description: List of node groups
-      items:
-        $ref: "#/components/schemas/nodeGroup"
-      maxItems: 16
-      minItems: 0
-      type: array
-      uniqueItems: true
-    nodeGroupState:
-      description: Node group operational state
+    nodeGroupCount:
+      description: Number of nodes
+      format: int64
+      minimum: 1
+      type: integer
+      example: 3
+    nodeGroupName:
+      description: Node group name
+      example: example-node-group-1
+      allOf:
+        - $ref: "#/components/schemas/name"
+    sshKey:
+      description: Public SSH key for remote node access.
+      pattern: ^ssh-[0-9A-Za-z]+ AAAA[0-9A-Za-z+/]+[=]{0,3}[ ]?([^@]+@[^@]+)?$
+      type: string
+      example: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG0LHaiLjqyWm3P+HSy2GxbZ4HU+HQ3LZ5fA51+Kp9Yi
+    state:
+      description: Resource operational state
       enum:
         - failed
         - pending
@@ -860,59 +586,44 @@ components:
         - terminating
         - unknown
       type: string
-    sshKey:
-      description: Public SSH key for accessing the nodes in a group
-      pattern: ^ssh-[0-9A-Za-z]+ AAAA[0-9A-Za-z+/]+[=]{0,3}[ ]?([^@]+@[^@]+)?$
-      type: string
-    sshKeys:
-      description: List of public SSH keys
-      items:
-        $ref: "#/components/schemas/sshKey"
-      type: array
-      uniqueItems: true
-    storage:
-      description: Storage UUID to use as a template
-      format: uuid
-      type: string
+      readOnly: true
+      example: running
     taint:
       description: Kubernetes taint to assign to nodes in a group
       properties:
         effect:
-          $ref: "#/components/schemas/effect"
+          title: Effect of the taint
+          enum:
+            - NoExecute
+            - NoSchedule
+            - PreferNoSchedule
+          type: string
+          example: NoSchedule
         key:
-          $ref: "#/components/schemas/key"
+          title: Key representing the taint
+          description: The key must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores, up to 253 characters.
+          example: team
+          type: string
+          minLength: 1
+          maxLength: 253
         value:
-          $ref: "#/components/schemas/value"
+          title: Key representing the value
+          description: The value must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores, up to 63 characters.
+          example: development
+          minLength: 0
+          maxLength: 63
       required:
         - effect
         - key
-        - value
       type: object
-    taints:
-      description: List of taints
-      items:
-        $ref: "#/components/schemas/taint"
-      type: array
-    uuid:
-      description: UUID
-      format: uuid
+    version:
+      description: Kubernetes version
       type: string
-    value:
-      description: Value of a key-value pair
-      maxLength: 255
-      minLength: 0
-      type: string
-    zone:
-      description: UpCloud zone to provision the Kubernetes cluster in
-      minLength: 1
-      type: string
-    antiAffinity:
-      description: Enable anti-affinity policies
-      type: boolean
-      default: false
+      example: "1.25.0"
 tags:
-  - description: Cluster operations
+  - description: Kubernetes cluster
     name: cluster
-  - description: Node group operations
+  - description: Node groups
     name: nodeGroup
-
+  - description: Version
+    name: version
