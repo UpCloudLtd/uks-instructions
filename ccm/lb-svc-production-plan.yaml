@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.beta.kubernetes.io/upcloud-load-balancer-config: |
+      {
+        "name": "hello-uks-production-lb",
+        "plan": "production-small"
+      }
+  labels:
+    app: hello-uks-prod
+  name: hello-uks-prod
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: hello-uks
+  type: LoadBalancer
