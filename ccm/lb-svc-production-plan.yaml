@@ -4,7 +4,6 @@ metadata:
   annotations:
     service.beta.kubernetes.io/upcloud-load-balancer-config: |
       {
-        "name": "hello-uks-production-lb",
         "plan": "production-small"
       }
   labels:
