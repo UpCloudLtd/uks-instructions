@@ -11,10 +11,6 @@ not be cleaned up properly
 fully configured, and you will need to wait a few more minutes. Alternatively, you can flush your local DNS cache with:
 `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder` (or the alike)
 
-## Cluster features
-
-- Webhooks are not working currently, which blocks deployments that utilise for example sidecar injection (Istio, Linkerd, etc.). We are working on a fix.
-
 ## Load balancing
 
 - Network configuration for automatically provisioned load balancers is not supported yet. Internal load balancers cannot be used.
