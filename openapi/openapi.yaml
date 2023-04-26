@@ -5,8 +5,6 @@ info:
     name: UpCloud Orchestration team
     url: https://github.com/UpCloudLtd/
   description: |
-    **This is a beta feature, please contact us if you have questions or run into any problems!**
-    
     Kubernetes is a container orchestration system for automating, managing and scaling software deployment.
 
     UpCloud Managed Kubernetes allows you to easily create Kubernetes clusters without having to take care about low level details.

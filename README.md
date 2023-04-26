@@ -1,8 +1,8 @@
-# UKS Beta
+# UpCloud Kubernetes Service examples
 
 This repository contains sample configurations for Terraform and Kubernetes manifests to get started with our UpCloud Kubernetes Service (UKS).
 
-Note that this repository is still evolving. Please check back during the beta period and also familiarise yourself with [the known issues](KNOWN_ISSUES.md).
+Note that this repository is still evolving. Please check back once in a while and also familiarise yourself with [the known issues](KNOWN_ISSUES.md). This repository will continue to exist while we are building better documentation with examples.
 
 ## Creating your first cluster
 
@@ -12,7 +12,6 @@ The simplest way to create a cluster is to use our Control Panel. You can do so 
 * Log in to the [UpCloud Control Panel](https://hub.upcloud.com).
 * Go to `Kubernetes` page using the left-hand side menu.
 * Click `Create new cluster`.
-* The beta is being run on a two zones: 🇩🇪 `de-fra1` and 🇫🇮 `fi-hel2`.
 * Select a Private Network for your Worker Nodes. This network should be in the same zone as the cluster you are creating. The network can not be connected to an existing cluster, can not have an attached router, and should have DHCP enabled with default route from DHCP disabled. For IP network of your SDN network, you can use for example `172.24.1.0/24`.
 * Create a node group or use the default node-group; node group is a group of workers with identical image templates.
 * Name your cluster.
@@ -23,7 +22,7 @@ The simplest way to create a cluster is to use our Control Panel. You can do so 
 ### Alternatives
 You can also create a cluser using the following ways:
 * Terraform - see [terraform/README.md](terraform/README.md) for more precise instructions
-* Direct API access - see [openapi/openapi.yaml](openapi/openapi.yaml) for UKS Beta API documentation; authentication can be achieved with [these](https://developers.upcloud.com/1.3/2-architecture/#authentication) instructions
+* Direct API access - see [openapi/openapi.yaml](openapi/openapi.yaml) for UKS API documentation; authentication can be achieved with [these](https://developers.upcloud.com/1.3/2-architecture/#authentication) instructions
 
 ### Kubeconfig
 
