@@ -1,35 +1,29 @@
-# Example Terraform configuration
+# Terraform examples
 
-This directory contains a basic Terraform configuration to get started with our UpCloud Kubernetes Service (UKS).
+This directory contains an example on how to create a kubernetes cluster and deploy an application into it using UpCloud and Kubernetes Terraform providers.
 
-## Structure
+The implementation is split into two directories:
 
-Configuration is organized into separate files:
+- [cluster](./cluster/) contains configuration to create a kubernetes cluster and its dependencies. It provides the UUID of the created cluster as its output.
+- [deployment](./deployment/) contains configuration for creating and exposing an kubernetes deployment 
 
-- [data.tf](data.tf)
-    - read-only data sources (`upcloud_kubernetes_cluster`, `upcloud_kubernetes_plans`)
-- [main.tf](main.tf)
-    - managed resources (`upcloud_kubernetes_cluster`, `upcloud_network`) 
-- [provider.tf](provider.tf)
-    - main `terraform` block and provider specific configurations
-- [variables.tf](variables.tf)
-    - (input) variables (`zone`)
+You can either run these separately by following the instruction in the sub-directories or as a combined setup by running the `terraform` commands in this directory.
 
 ## Provider setup
 
 ### UpCloud
 
-See [the official UpCloud Terraform provider documentation](https://registry.terraform.io/providers/UpCloudLtd/upcloud/latest/docs) on how to configure the actual `upcloud` provider.
+To be able to deploy resources, you will need to configure `UPCLOUD_USERNAME` and `UPCLOUD_PASSWORD` environment variables. See [the official UpCloud Terraform provider documentation](https://registry.terraform.io/providers/UpCloudLtd/upcloud/latest/docs) for more details on how to configure the `upcloud` provider.
 
 ### Kubernetes
 
-There are default values for [provider.tf](provider.tf) that allow the provider to authenticate against the Kubernetes cluster defined in this configuration. Credentials are acquired from `upcloud_kubernetes_cluster`, defined in [data.tf](data.tf).
+The Kubernetes provider is configured using certificates acquired with [upcloud_kubernetes_cluster data source](https://registry.terraform.io/providers/UpCloudLtd/upcloud/latest/docs/data-sources/kubernetes_cluster).
 
 [Official documentation](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs) covers additional information needed to on how use the provider and it's resources.
 
 ## Provisioning
 
-Running apply in this directory will create a network, a cluster and a Kubernetes namespace in the newly created cluster:
+Running `terraform apply` in this directory will configure both cluster and deployment inside the cluster. See configurations in sub-directories for details.
 
 ```shell
 terraform init
