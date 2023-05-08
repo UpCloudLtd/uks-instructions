@@ -178,3 +178,4 @@ that triggers the auto TLS.
 See the following:
 
 * Create a service with a production-grade load balancer plan with a custom name [lb-svc-production-plan.yaml](lb-svc-production-plan.yaml)
+* Create a service with HTTP redirect to HTTPS and configured forwarded-for headers to applications can get and log actual IP addresses of connecting clients: [lb-svc-ip-forwarded-for.yaml](lb-svc-ip-forwarded-for.yaml)
