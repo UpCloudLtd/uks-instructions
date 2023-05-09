@@ -102,7 +102,7 @@ $ kubectl -n kube-system get secrets upcloud -o yaml -o jsonpath='{.data.usernam
 Go to https://hub.upcloud.com/people/permissions and grant CSI sub-account for permission to access storage.
 
 ### Grant device permissions using API
-Use following permission JSON object to set  permission:  
+Use following permission JSON object to set permission:  
 ```json
 // POST /1.3/permission/grant
 {
@@ -110,7 +110,7 @@ Use following permission JSON object to set  permission:
     "options": {},
     "target_identifier": "<storage_uuid>",
     "target_type": "storage",
-    "user": "<csi_subaccount_username"
+    "user": "<csi_subaccount_username>"
   }
 }
 ```
