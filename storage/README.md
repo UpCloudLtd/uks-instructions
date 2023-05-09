@@ -149,3 +149,5 @@ $ kubectl exec -it deployments/mariadb -- mysql -uroot -p$MARIADB_PASSWORD -e "S
 +----+
 ```
 
+# What's next
+- Read [migrating persistent volume claim (PVC) from one cluster to another](migration.md)
