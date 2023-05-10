@@ -4,6 +4,7 @@ Persistent volume size can be expanded by modifying `storage` attribute in persi
 Upcloud's CSI driver only supports offline expansion so the application needs to be scalled down before operation.
 
 Expanding persistent volume requires following steps:
+- __take data backup!__
 - shut down application that uses persistent volume that is going to be resized
 - patch PVC object with new size
 - when resize is done, start application(s)
