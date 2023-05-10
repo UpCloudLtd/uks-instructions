@@ -127,7 +127,7 @@ $ kubectl exec -it deployments/mariadb-clone -- mysql -uroot -p$MARIADB_PASSWORD
 
 Add some more numbers and check that numbers are added on top of cloned numbers
 ```shell
-$ kubectl exec -it deployments/mariadb -- mysql -uroot -p$MARIADB_PASSWORD -e "INSERT INTO test.number (id) VALUES (5), (6), (7), (8), (9), (10)"
+$ kubectl exec -it deployments/mariadb-clone -- mysql -uroot -p$MARIADB_PASSWORD -e "INSERT INTO test.number (id) VALUES (5), (6), (7), (8), (9), (10)"
 ```
 ```shell
 $ kubectl exec -it deployments/mariadb-clone -- mysql -uroot -p$MARIADB_PASSWORD -e "SELECT id FROM test.number";
