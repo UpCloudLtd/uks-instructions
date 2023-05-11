@@ -7,7 +7,7 @@ Migrating persistent volume to another cluster requires following steps:
 - old cluster
     - check that volume reclaim policy is set to `retain` to preserve data when volume is eventually removed from old cluster
     - export persistent volume (PV) and persistent volume claim (PVC) objects from the old cluster
-    - shutdown application that uses PVC in the old cluster
+    - shut down application that uses PVC in the old cluster
     - determine storage device ID
 - new cluster
     - grant storage device permissions
@@ -62,8 +62,8 @@ $ kubectl get pv pvc-647af707-d53b-4dd3-9571-426a4d321593 -o yaml > pvc-647af707
 $ kubectl -n default get pvc mariadb-pvc -o yaml > mariadb-pvc.yaml
 ```
 
-## Shutdown application(s)
-Shutdown application that uses PVC in the old cluster. This will detach storage device from worker node. 
+## Shut down application(s)
+Shut down application that uses PVC in the old cluster. This will detach storage device from worker node. 
 
 __MariaDB example output__:
 ```shell
@@ -102,9 +102,8 @@ $ kubectl -n kube-system get secrets upcloud -o yaml -o jsonpath='{.data.usernam
 Go to https://hub.upcloud.com/people/permissions and grant CSI sub-account for permission to access storage.
 
 ### Grant device permissions using API
-Use following permission JSON object to set permission:  
+Use following permission JSON object to set permission using `POST` request to `/1.3/permission/grant` API endpoint:  
 ```json
-// POST /1.3/permission/grant
 {
   "permission": {
     "options": {},
@@ -114,6 +113,7 @@ Use following permission JSON object to set permission:
   }
 }
 ```
+
 See [API documentation](https://developers.upcloud.com/1.3/18-permissions/#grant-permission) for more detailed info on how to use permission API resource.
 
 ## Import PV and PVC objects to new cluster
