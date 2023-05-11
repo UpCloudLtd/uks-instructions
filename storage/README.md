@@ -150,4 +150,5 @@ $ kubectl exec -it deployments/mariadb -- mysql -uroot -p$MARIADB_PASSWORD -e "S
 ```
 
 # What's next
+- Read how [snapshots](snapshots.md) can be used to restore `mariadb-pvc` state if something goes wrong
 - Read [migrating persistent volume claim (PVC) from one cluster to another](migration.md)
