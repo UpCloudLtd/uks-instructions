@@ -150,4 +150,5 @@ $ kubectl exec -it deployments/mariadb -- mysql -uroot -p$MARIADB_PASSWORD -e "S
 ```
 
 # What's next
+- See how volume size can be [extended](expand.md) by patching PVC object
 - Read [migrating persistent volume claim (PVC) from one cluster to another](migration.md)
