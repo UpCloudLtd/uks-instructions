@@ -51,6 +51,8 @@ spec:
 ```
 *PVC `mariadb-pvc-clone` uses `mariadb-pvc` as a data-source by cloning the underlying storage device.*
 
+Storage size can be also extended by increasing `storage` attribute. Storage size needs to be equal or bigger than source storage.
+
 Apply manifest
 ```shell
 $ kubectl apply -f clone.yaml
