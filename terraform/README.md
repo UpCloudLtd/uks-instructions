@@ -24,7 +24,7 @@ The Kubernetes provider is configured using certificates acquired with [upcloud_
 
 ## Provisioning
 
-By default, we create a cluster where all cluster nodes have a public IP attached to them.
+By default, we create a cluster where all cluster nodes have public IPs attached to them.
 
 Running `terraform apply` in this directory will configure both cluster and deployment inside the cluster. See configurations in sub-directories for details.
 
@@ -36,7 +36,7 @@ terraform apply
 
 ## Provisoning a cluster with private node groups
 
-You can also create a new cluster with private node groups by doing the following:
+You can also create a cluster with private node groups by doing the following:
 
 - Modify `main.tf` and uncomment `module.cluster_private` and `module.deployment_private`
 - Modify `outputs.tf` and uncomment the relevant outputs
