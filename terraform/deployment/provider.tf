@@ -2,14 +2,18 @@ terraform {
   required_providers {
     upcloud = {
       source  = "UpCloudLtd/upcloud"
-      version = ">= 2.8.4"
+      version = ">= 2.11.0"
     }
   }
 }
 
-provider "upcloud" {
-  # It is recommended to use UPCLOUD_USERNAME and UPCLOUD_PASSWORD for providing the credentials to the provider.
-}
+# Empty provider block disabled by default
+#provider "upcloud" {
+# username and password configuration arguments can be omitted
+# if environment variables UPCLOUD_USERNAME and UPCLOUD_PASSWORD are set
+# username = ""
+# password = ""
+#}
 
 data "upcloud_kubernetes_cluster" "example" {
   id = var.cluster_id

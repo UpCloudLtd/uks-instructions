@@ -17,7 +17,7 @@ variable "store_kubeconfig" {
 }
 
 variable "ip_network_range" {
-  default = "172.16.1.0/24"
+  default = "172.16.2.0/24"
   description = "CIDR range used by the cluster SDN network."
   type = string
 }
