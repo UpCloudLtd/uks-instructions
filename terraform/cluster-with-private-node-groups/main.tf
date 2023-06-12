@@ -1,3 +1,8 @@
+# Create a router for your network
+resource "upcloud_router" "example" {
+  name = "${var.basename}-router"
+}
+
 # Create a network for your cluster
 resource "upcloud_network" "example" {
   name = "${var.basename}-net"
@@ -6,21 +11,32 @@ resource "upcloud_network" "example" {
   ip_network {
     address = var.ip_network_range
     dhcp    = true
+    dhcp_default_route = true
     family  = "IPv4"
   }
 
-  # UpCloud Kubernetes Service will add a router to this network to ensure cluster networking is working as intended.
-  # You need to ignore changes to it, otherwise TF will attempt to detach the router on subsequent applies
-  lifecycle {
-    ignore_changes = [router]
+  router = upcloud_router.example.id
+}
+
+# Create a Managed NAT GW for Internet connectivity from the SDN network
+resource "upcloud_gateway" "example" {
+  name     = "${var.basename}-gw"
+  zone     = var.zone
+  features = ["nat"]
+
+  router {
+    id = upcloud_router.example.id
   }
 }
 
 # Create a cluster
 resource "upcloud_kubernetes_cluster" "example" {
-  name    = "${var.basename}-cluster"
-  network = upcloud_network.example.id
-  zone    = var.zone
+  name                = "${var.basename}-cluster"
+  network             = upcloud_network.example.id
+  zone                = var.zone
+  private_node_groups = true
+
+  depends_on = [upcloud_gateway.example]
 }
 
 # Create a node group for your cluster
