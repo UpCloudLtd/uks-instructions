@@ -3,6 +3,8 @@
 
 UKS has a built-in a Cloud Controller Manager that interfaces with the UpCloud API and manages other cloud resources, such as load balancers.
 
+Note that if your Managed Load Balancer is managed by the UKS cluster, all Load Balancer configuration changes should be made through object annotations. See [below](#customising-load-balancer-configuration) for details and examples. **All manual modifications done to the Load Balancer through Hub or API are overwritten.**
+
 ## Exposing services through Managed Load Balancer
 
 Create a deployment and expose it to the public Internet over HTTP by running the following commands:
