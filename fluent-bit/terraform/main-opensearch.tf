@@ -56,7 +56,7 @@ resource "local_file" "opensearch-fluentbit-output" {
     tls on
     Suppress_Type_Name On
     Index uks
-    Trace_Error on
+    Trace_Error off
     Replace_Dots On
   EOT
   filename = "${path.module}/opensearch-fluentbit-output.txt"

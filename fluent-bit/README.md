@@ -1,16 +1,16 @@
 # UpCloud Kubernetes Service with Fluent-bit and OpenSearch Integration
 
-dcdcdcd 
+This is an example on how to create an [OpenSearch](https://upcloud.com/resources/tutorials/getting-started-with-opensearch) database using UpCloud Managed Databases, and how to configure the [UpCloud Kubernetes Service](https://upcloud.com/products/managed-kubernetes) to ship all log files to the database using Fluent-bit.  
 
 ## Prerequisites
 
-In addition to a [working UKS Cluster](https://upcloud.com/products/managed-kubernetes), you need these tools to be installed:
+In addition to a [working UKS Cluster](https://upcloud.com/products/managed-kubernetes), you will need these tools to be installed:
 
 * terraform
 * make
 * helm
 
-To create the resources with Terraform, you'll need your API credentials and Kubeconfig file exported.
+To create the resources with Terraform and install Fluent-bit, you will need your API credentials and Kubeconfig file exported and environment variables.
 
 ```
 export UPCLOUD_USERNAME=your_username
@@ -18,7 +18,7 @@ export UPCLOUD_PASSWORD=your_password
 export KUBECONFIG=your_kubeconfig_file
 ```
 
-You must also create `config.tfvars` file with your own settings:
+You must also create a `config.tfvars` file with your own settings in the `terraform` folder:
 
 ```
 zone = "fi-hel2"
@@ -27,7 +27,9 @@ opensearch_plan = "1x2xCPU-4GB-80GB-1D""
 
 ## Deploy OpenSearch
 
-Fluent-bit needs a destination for logs, in this case we will be using [UpCloud Managed OpenSearch](https://upcloud.com/resources/tutorials/getting-started-with-opensearch) database. Initiate the project and install required Terraform providers.
+Fluent-bit needs a destination for the log files, in this case we will be using [UpCloud Managed OpenSearch](https://upcloud.com/resources/tutorials/getting-started-with-opensearch) database. 
+
+Initiate the project and install required Terraform providers.
 
 ```
 make init
@@ -56,7 +58,7 @@ To start, add the Fluent-bit repo to helm:
 ```
 helm repo add fluent https://fluent.github.io/helm-charts
 ```
-Also clone the Fluent-bit helm-chart repo to your local machine, we will need these files to modify and install Fluent-bit:
+Also clone the Fluent-bit helm-charts repo to your local machine, we will need these files to modify and install Fluent-bit:
 
 ```
 git clone https://github.com/fluent/helm-charts/
@@ -72,7 +74,7 @@ helm install --namespace fluentbit --create-namespace fluent-bit .
 
 ## Configure Users and View Logs
 
-The logs are now flowing to the OpenSearch instance. The database was created with Access Control on to ensure proper security, and by default this means that only the `fluentbit` user has read and write access to the `uks` index. If you want to view the log information in OpenSearch Dashboard, you will need to give `upadmin` user sufficient access. Go to [UpCloud](https://upcloud.com), login and go to `Databases`. Open the created database and click on `Users` tab. Modify the `upadmin` user and give the user admin rights.
+The logs are now flowing to the OpenSearch instance. The database was created with Access Control ON to ensure proper security, and by default this means that only the `fluentbit` user has read and write access to the `uks` index. If you want to view the log information in OpenSearch Dashboard, you will need to give `upadmin` user sufficient access. Go to [UpCloud](https://upcloud.com), login and go to `Databases`. Open the created database and click on `Users` tab. Modify the `upadmin` user by clicking `ACCESS CONTROL` and give the user admin rights.
 
 ![Access Control](images/opensearch_access-control.png)
 
