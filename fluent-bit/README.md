@@ -1,6 +1,6 @@
 # UpCloud Kubernetes Service with Fluent-bit and OpenSearch Integration
 
-This is an example on how to create an [OpenSearch](https://upcloud.com/resources/tutorials/getting-started-with-opensearch) database using UpCloud Managed Databases, and how to configure the [UpCloud Kubernetes Service](https://upcloud.com/products/managed-kubernetes) to ship all log files to the database using Fluent-bit.  
+This is an example on how to create an [OpenSearch](https://upcloud.com/resources/tutorials/getting-started-with-opensearch) database using UpCloud Managed Databases and Terraform, and how to configure the [UpCloud Kubernetes Service](https://upcloud.com/products/managed-kubernetes) to ship all log files to the database using Fluent-bit.  
 
 ## Prerequisites
 
@@ -10,7 +10,7 @@ In addition to a [working UKS Cluster](https://upcloud.com/products/managed-kube
 * make
 * helm
 
-To create the resources with Terraform and install Fluent-bit, you will need your API credentials and Kubeconfig file exported and environment variables.
+To create the resources with Terraform and install Fluent-bit, you will need your API credentials and Kubeconfig file exported as environment variables.
 
 ```
 export UPCLOUD_USERNAME=your_username
@@ -65,6 +65,8 @@ git clone https://github.com/fluent/helm-charts/
 ```
 
 Open the values.yaml file in `helm-charts/charts/fluent-bit/values.yaml` with a text editor. Add the content from previously created `terraform\opensearch-fluentbit-output.txt` under `[OUTPUT]` section and remove any other OUTPUT options.
+
+![Output](images/opensearch_fluentbit_output.png)
 
 Finally, install Fluent-bit to `fluentbit` namespace:
 
