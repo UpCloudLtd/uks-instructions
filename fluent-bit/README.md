@@ -49,7 +49,7 @@ Then apply the changes:
 make apply
 ```
 
-A file called `terraform\opensearch-fluentbit-output.txt` will be created, and we will need this file to configure Fluent-bit to send all the logs to our OpenSearch instance.
+A file called `terraform/opensearch-fluentbit-helm-values.yaml` will be created, and we will need this file to configure Fluent-bit to send all the logs to our OpenSearch instance.
 
 ## Deploy Fluent-bit
 
@@ -58,25 +58,22 @@ To start, add the Fluent-bit repo to helm:
 ```
 helm repo add fluent https://fluent.github.io/helm-charts
 ```
-Also clone the Fluent-bit helm-charts repo to your local machine, we will need these files to modify and install Fluent-bit:
+
+Finally, install Fluent-bit to `fluent-bit` namespace:
 
 ```
-git clone https://github.com/fluent/helm-charts/
+helm install --values terraform/opensearch-fluentbit-helm-values.yaml --namespace fluent-bit --create-namespace fluent-bit .
 ```
 
-Open the values.yaml file in `helm-charts/charts/fluent-bit/values.yaml` with a text editor. Add the content from previously created `terraform\opensearch-fluentbit-output.txt` under `[OUTPUT]` section and remove any other OUTPUT options.
-
-![Output](images/opensearch_fluentbit_output.png)
-
-Finally, install Fluent-bit to `fluentbit` namespace:
-
-```
-helm install --namespace fluentbit --create-namespace fluent-bit .
-```
+If you want to further modify your fluent-bit configuration, please refer to the [chart documentation](https://github.com/fluent/helm-charts/blob/main/charts/fluent-bit/values.yaml). You can copy the generated values file to another location and add your changes to it.
 
 ## Configure Users and View Logs
 
-The logs are now flowing to the OpenSearch instance. The database was created with Access Control ON to ensure proper security, and by default this means that only the `fluentbit` user has read and write access to the `uks` index. If you want to view the log information in OpenSearch Dashboard, you will need to give `upadmin` user sufficient access. Go to [UpCloud](https://upcloud.com), login and go to `Databases`. Open the created database and click on `Users` tab. Modify the `upadmin` user by clicking `ACCESS CONTROL` and give the user admin rights.
+The logs are now flowing to the OpenSearch instance. The database was created with Access Control ON to ensure proper security, and by default this means that only the `fluentbit` user has read and write access to the `uks` index. If you want to view the log information in OpenSearch Dashboard, you will need to give `upadmin` user sufficient access:
+
+- Go to [UpCloud](https://upcloud.com), login and go to `Databases`
+- Open the created database and click on `Users` tab
+- Modify the `upadmin` user by clicking `ACCESS CONTROL` and give the user admin rights.
 
 ![Access Control](images/opensearch_access-control.png)
 
