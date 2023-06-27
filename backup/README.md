@@ -143,7 +143,7 @@ You should have the original logs created before backup, and the latest logs fro
 You can also view all the backup and restore files directly in the S3 Bucket:
 
 * Go to [UpCloud](https://upcloud.com), login and go to `Object Storage`
-* Click on `velero` Object Storage and select your bucket
+* Click on `velero` Object Storage and select the `uks` bucket
 * Feel free to poke around the file system and see the backup and restore files
 
 ![Velero Bucket](images/velero-bucket.png)
