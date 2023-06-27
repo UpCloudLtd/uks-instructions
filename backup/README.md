@@ -115,7 +115,13 @@ curl -i lb-yourlbdnsname-1.upcloudlb.com
 kubectl exec -n velero-demo nginx-pod-name -it -- cat /var/log/nginx/access.log
 ```
 
-We have data in the logs, and our backup has completed. Let's delete the test app deployment and PVC and see if we can do a successful restore:
+Since we ran a pre- and posthooks, there should be two text files in the log folder as well:
+
+```text
+kubectl exec -n velero-demo nginx-pod-name -it -- ls -la /var/log/nginx/
+```
+
+We have data in the logs, and our backup has completed with pre- and posthooks completed. Let's delete the test app deployment and PVC and see if we can do a successful restore:
 
 ```text
 kubectl delete deployments.apps -n velero-demo nginx
