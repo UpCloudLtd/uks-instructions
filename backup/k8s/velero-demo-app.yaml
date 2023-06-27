@@ -1,0 +1,74 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: velero-demo
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: nginx-logs
+  namespace: velero-demo
+  labels:
+    app: velero-app
+spec:
+  storageClassName: upcloud-block-storage-maxiops
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: velero-demo
+  labels:
+    app: velero-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: velero-app
+  template:
+    metadata:
+      labels:
+        app: velero-app
+      annotations:
+      # Velero supports running scripts before and after a backup is taken,
+      # as well as before and after a restore is done.
+        pre.hook.backup.velero.io/command: '["/bin/bash", "-c", "echo prehook > /var/log/nginx/prehook.txt"]'
+        post.hook.backup.velero.io/command: '["/bin/bash", "-c", "echo posthook > /var/log/nginx/posthook.txt"]'
+    spec:
+      volumes:
+        - name: nginx-logs
+          persistentVolumeClaim:
+           claimName: nginx-logs
+      containers:
+      - image: nginx:latest
+        name: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+          - mountPath: "/var/log/nginx"
+            name: nginx-logs
+            readOnly: false
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nginx-lb
+  name: lb-nginx
+  namespace: velero-demo
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: velero-app
+  type: LoadBalancer
