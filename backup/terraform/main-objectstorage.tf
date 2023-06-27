@@ -16,8 +16,8 @@ provider "upcloud" {
 
 resource "upcloud_object_storage" "velero" {
   description = "S3 Object Storage Target for Velero Backups"
-  name        = var.name
-  size        = var.bucket_size
+  name        = var.objstorage_name
+  size        = var.objstorage_size
   zone        = var.zone
 
   # Keep thoese values as empty string to let the provider know that it should take 

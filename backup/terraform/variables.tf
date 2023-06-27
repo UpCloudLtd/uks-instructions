@@ -1,7 +1,7 @@
-variable "name" {
+variable "objstorage_name" {
   type = string
 }
-variable "bucket_size" {
+variable "objstorage_size" {
   type = number
 }
 
