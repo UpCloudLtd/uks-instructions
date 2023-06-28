@@ -22,9 +22,9 @@ export KUBECONFIG=your_kubeconfig_file
 You must also create a `config.tfvars` file with your own settings in the `terraform` folder:
 
 ```text
-name            = "velero"
+objstorage_name = "velero"
 zone            = "fi-hel2"
-bucket_size     = 250
+objstorage_size = 250
 bucket_name     = "uks"
 access_key      = "test"
 secret_key      = "testkey123"
@@ -58,7 +58,7 @@ A file called `terraform/velero-install.sh` will be created. This file is needed
 
 ## Deploy Velero
 
-You can run the installation script `terraform/velero-install.sh` as-is, or you can run the individual commands yourself if you want to see more details on what the installation involves. First it will install Velero components to the UpCloud Kubernetes Service cluster, and then it adds the necessary plugin for CSI. Lastly, the volumesnapshotclass needs to be labeled with a Velero tag to make Velero aware of the feature.
+You can run the installation script `terraform/velero-install.sh` as-is, or you can run the individual commands yourself if you want to see more details on what the installation involves. First the script will install Velero components to the UpCloud Kubernetes Service cluster, and then it adds the necessary CSI plugin to Velero. Lastly, the volumesnapshotclass needs to be labeled with a Velero tag to make Velero aware of the CSI snapshot feature.
 
 Kick off the installation script:
 
@@ -77,7 +77,7 @@ Now we are ready to deploy a test app on the cluster!
 
 ## Deploy a Test App
 
-Our test app is a simple nginx pod. We use a Persistent Volume for the nginx logs, so we can follow site loads and see if our backup and restore works. View the app yaml for more information. Velero is also capable of doing pre- and posthooks for both backups and restores. The test app has an example on how to run scripts before and after a backup is run.
+Our test app is a simple nginx pod. We use a Persistent Volume for the nginx logs, so we can follow website loads and see if our backup and restore works. View the app yaml for more information. Velero is also capable of doing pre- and posthooks for both backups and restores. The test app has an example on how to run scripts before and after a backup is run.
 
 ```text
 cat k8s/velero-demo-app.yaml
@@ -102,26 +102,26 @@ Verify that you can see the webpage loads in nginx logs. The logs are stored on 
 kubectl exec -n velero-demo nginx-pod-name -it -- cat /var/log/nginx/access.log
 ```
 
-Now we are ready to create a backup! Note the time stamp on the nginx logs, so you can verify the backup and restore worked as expected. We are using a label to select the test app pod and PVC, but Velero can also backup the whole velero-demo namespaces or even the whole cluster.
+Now we are ready to create a backup! Note the time stamps on the nginx logs, so you can verify the backup and restore worked as expected. We are using a label to select the test app deployment and the PVC, but Velero can also backup the whole velero-demo namespace or even the whole cluster.
 
 ```text
 velero backup create velerotest1 --selector app=velero-app 
 ```
 
-Let's reload the nginx welcome page a few times to get more data. Remember, we created the backup point-in-time before these log messages.
+Let's reload the nginx welcome page a few times to get more data. Remember, we created the backup point-in-time before these log messages, so they should not be visible after restore.
 
 ```text
 curl -i lb-yourlbdnsname-1.upcloudlb.com
 kubectl exec -n velero-demo nginx-pod-name -it -- cat /var/log/nginx/access.log
 ```
 
-Since we ran a pre- and posthooks, there should be two text files in the log folder as well:
+Since we ran a pre- and posthooks, there should be two text files, `prehoot.txt` and `posthook.txt`, in the log folder as well:
 
 ```text
 kubectl exec -n velero-demo nginx-pod-name -it -- ls -la /var/log/nginx/
 ```
 
-We have data in the logs, and our backup has completed with pre- and posthooks completed. Let's delete the test app deployment and PVC and see if we can do a successful restore:
+We have data in the logs, and our backup has completed with pre- and posthooks executed. Let's delete the test app deployment and the PVC and see if we can do a successful restore:
 
 ```text
 kubectl delete deployments.apps -n velero-demo nginx
@@ -148,7 +148,7 @@ kubectl exec -n velero-demo nginx-pod-name -it -- cat /var/log/nginx/access.log
 
 You should have the original logs created before backup, and the latest logs from the page load after restore!
 
-You can also view all the backup and restore files directly in the S3 Bucket:
+You can also view all the backup and restore files directly in the S3 Bucket. Note that the PVC snapshots are not stored in the bucket, they are in the same storage system as the original Persistent Volume:
 
 * Go to [UpCloud](https://upcloud.com), login and go to `Object Storage`
 * Click on `velero` Object Storage and select the `uks` bucket
