@@ -32,7 +32,7 @@ secret_key      = "testkey123"
 
 ## Deploy UpCloud Object Storage
 
-Velero needs an S3 compatible object storage to upload the backup files to. We will be using the UpCloud Object Storage service for this. In addition, Velero supports CSI based snapshots for Persistent Volume backups. These backup snapshots won't be stored in the S3 bucket, they will remain in the storage system and therefore limits the restore to the same zone where the initial backup was taken. UpCloud MaxIOPS supports snapshosts and our [CSI driver](https://github.com/UpCloudLtd/upcloud-csi) fully supports the feature.
+Velero needs an S3 compatible object storage to upload the backup files to. We will be using the UpCloud Object Storage service for this. In addition, Velero supports CSI based snapshots for Persistent Volume backups. These backup snapshots won't be stored in the S3 bucket, they will remain in the storage system and therefore limits the restore to the same zone where the initial backup was taken. [UpCloud MaxIOPS](https://upcloud.com/products/block-storage) supports snapshots and our [CSI driver](https://github.com/UpCloudLtd/upcloud-csi) fully supports the feature.
 
 Initiate the project and install required Terraform providers.
 
@@ -77,7 +77,7 @@ Now we are ready to deploy a test app on the cluster!
 
 ## Deploy a Test App
 
-Our test app is a simple nginx pod. We use a Persistent Volume for the nginx logs, so we can follow website loads and see if our backup and restore works. View the app yaml for more information. Velero is also capable of doing pre- and posthooks for both backups and restores. The test app has an example on how to run scripts before and after a backup is run.
+Our test app is a simple nginx pod. We use a Persistent Volume for the nginx logs, so we can follow website loads and see if our backup and restore works. View the app yaml for more information. Velero is also capable of doing pre- and post-hooks for both backups and restores. The test app has an example on how to run scripts before and after a backup is run.
 
 ```text
 cat k8s/velero-demo-app.yaml
@@ -115,13 +115,13 @@ curl -i lb-yourlbdnsname-1.upcloudlb.com
 kubectl exec -n velero-demo nginx-pod-name -it -- cat /var/log/nginx/access.log
 ```
 
-Since we ran a pre- and posthooks, there should be two text files, `prehoot.txt` and `posthook.txt`, in the log folder as well:
+Since we ran a pre- and post-hooks, there should be two text files, `prehook.txt` and `posthook.txt`, in the log folder as well:
 
 ```text
 kubectl exec -n velero-demo nginx-pod-name -it -- ls -la /var/log/nginx/
 ```
 
-We have data in the logs, and our backup has completed with pre- and posthooks executed. Let's delete the test app deployment and the PVC and see if we can do a successful restore:
+We have data in the logs, and our backup has completed with pre- and post-hooks executed. Let's delete the test app deployment and the PVC and see if we can do a successful restore:
 
 ```text
 kubectl delete deployments.apps -n velero-demo nginx
