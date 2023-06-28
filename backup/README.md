@@ -115,7 +115,7 @@ curl -i lb-yourlbdnsname-1.upcloudlb.com
 kubectl exec -n velero-demo nginx-pod-name -it -- cat /var/log/nginx/access.log
 ```
 
-Since we ran a pre- and post-hooks, there should be two text files, `prehook.txt` and `posthook.txt`, in the log folder as well:
+Since we ran pre- and post-hooks, there should be two text files, `prehook.txt` and `posthook.txt`, in the log folder as well:
 
 ```text
 kubectl exec -n velero-demo nginx-pod-name -it -- ls -la /var/log/nginx/
