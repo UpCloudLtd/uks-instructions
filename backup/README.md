@@ -102,7 +102,7 @@ Verify that you can see the webpage loads in nginx logs. The logs are stored on 
 kubectl exec -n velero-demo deployment/nginx -it -- cat /var/log/nginx/access.log
 ```
 
-Now we are ready to create a backup! Note the time stamps on the nginx logs, so you can verify the backup and restore worked as expected. We are using a namespace to select the test app resources, but Velero can also backup using labels. Use the `velero describe` command to monitor the backup process.
+Now we are ready to create a backup! Note the time stamps on the nginx logs, so you can verify the backup and restore worked as expected. We are using a label to select the test app resources, but Velero can also backup using namespaces. Use the `velero describe` command to monitor the backup process.
 
 ```text
 velero backup create velerotest1 --selector app=velero-app
