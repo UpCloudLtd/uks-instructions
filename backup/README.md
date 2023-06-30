@@ -19,15 +19,15 @@ export UPCLOUD_PASSWORD=your_password
 export KUBECONFIG=your_kubeconfig_file
 ```
 
-You must also create a `config.tfvars` file with your own settings in the `terraform` folder:
+You must also create a `config.tfvars` file with your own settings in the `terraform` folder. If you want, you can leave the access and secret keys as empty strings, they will be automatically generated:
 
 ```text
 objstorage_name = "velero"
 zone            = "fi-hel2"
 objstorage_size = 250
 bucket_name     = "uks"
-access_key      = "test"
-secret_key      = "testkey123"
+access_key      = ""
+secret_key      = ""
 ```
 
 ## Deploy UpCloud Object Storage
@@ -70,7 +70,7 @@ cd terraform
 Velero should be installed in a few seconds. You can check the installation logs in the Velero pod. You should see a successful connection to the S3 bucket:
 
 ```text
-kubectl logs -n velero velero-pod-name
+kubectl logs -n velero deployment/velero
 ```
 
 Now we are ready to deploy a test app on the cluster!
@@ -99,29 +99,44 @@ curl -i lb-yourlbdnsname-1.upcloudlb.com
 Verify that you can see the webpage loads in nginx logs. The logs are stored on a Persistent Volume:
 
 ```text
-kubectl exec -n velero-demo nginx-pod-name -it -- cat /var/log/nginx/access.log
+kubectl exec -n velero-demo deployment/nginx -it -- cat /var/log/nginx/access.log
 ```
 
-Now we are ready to create a backup! Note the time stamps on the nginx logs, so you can verify the backup and restore worked as expected. We are using a label to select the test app deployment and the PVC, but Velero can also backup the whole velero-demo namespace or even the whole cluster.
+Now we are ready to create a backup! Note the time stamps on the nginx logs, so you can verify the backup and restore worked as expected. We are using a namespace to select the test app resources, but Velero can also backup using labels. Use the `velero describe` command to monitor the backup process.
 
 ```text
-velero backup create velerotest1 --selector app=velero-app 
+velero backup create velerotest1 --selector app=velero-app
+velero describe backups velerotest1 
 ```
 
 Let's reload the nginx welcome page a few times to get more data. Remember, we created the backup point-in-time before these log messages, so they should not be visible after restore.
 
 ```text
 curl -i lb-yourlbdnsname-1.upcloudlb.com
-kubectl exec -n velero-demo nginx-pod-name -it -- cat /var/log/nginx/access.log
+kubectl exec -n velero-demo deployment/nginx -it -- cat /var/log/nginx/access.log
 ```
 
 Since we ran pre- and post-hooks, there should be two text files, `prehook.txt` and `posthook.txt`, in the log folder as well:
 
 ```text
-kubectl exec -n velero-demo nginx-pod-name -it -- ls -la /var/log/nginx/
+kubectl exec -n velero-demo deployment/nginx -it -- ls -la /var/log/nginx/
 ```
 
-We have data in the logs, and our backup has completed with pre- and post-hooks executed. Let's delete the test app deployment and the PVC and see if we can do a successful restore:
+We have data in the logs, and our backup has completed with pre- and post-hooks executed. Time to get rid of our app!
+
+The default Reclaim Policy for PVCs in UKS is to `Retain` the Persistent Volume after a Persistent Volume Claim has been deleted. Let's make sure our restore really works, and remove the Persistent Volume as well. We can change the Reclaim Policy to `Delete` on an individual Persistent Volume:
+
+```text
+kubectl patch pv $(kubectl get pvc nginx-logs -n velero-demo -o jsonpath='{.spec.volumeName}') -p '{"spec":{"persistentVolumeReclaimPolicy":"Delete"}}'
+```
+
+In addition, we need to get rid of a Volume Snaphost Contents that was created by Velero:
+
+```text
+kubectl delete volumesnapshotcontents.snapshot.storage.k8s.io --selector velero.io/backup-name=velerotest1
+```
+
+Now we are ready to delete the test app deployment and the PVC and see if we can do a successful restore:
 
 ```text
 kubectl delete deployments.apps -n velero-demo nginx
@@ -143,7 +158,7 @@ curl -i lb-yourlbdnsname-1.upcloudlb.com
 Lastly, let's see what log entries we have left:
 
 ```text
-kubectl exec -n velero-demo nginx-pod-name -it -- cat /var/log/nginx/access.log
+kubectl exec -n velero-demo deployment/nginx -it -- cat /var/log/nginx/access.log
 ```
 
 You should have the original logs created before backup, and the latest logs from the page load after restore!

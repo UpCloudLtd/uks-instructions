@@ -13,17 +13,37 @@ provider "upcloud" {
   # export UPCLOUD_PASSWORD="Password of your UpCloud API user"
 }
 
+resource "random_password" "access_key" {
+  length      = 20
+  special     = false
+  min_numeric = 2
+  lower       = false
+}
+
+resource "random_password" "secret_key" {
+  length           = 40
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
+resource "random_string" "objstorage_suffix" {
+  length      = 8
+  special     = false
+  upper       = false
+  min_numeric = 2
+}
 
 resource "upcloud_object_storage" "velero" {
   description = "S3 Object Storage Target for Velero Backups"
-  name        = var.objstorage_name
+  name        = "${var.objstorage_name}-${random_string.objstorage_suffix.result}"
   size        = var.objstorage_size
   zone        = var.zone
 
-  # Keep thoese values as empty string to let the provider know that it should take 
-  # the values from environment variables
-  access_key = var.access_key
-  secret_key = var.secret_key
+  # Keep these values as empty string to let the provider know that it should take 
+  # the values from environment variables. If no environmental values are available,
+  # autogenerate keys
+  access_key = var.access_key == "" ? random_password.access_key.result : var.access_key
+  secret_key = var.secret_key == "" ? random_password.secret_key.result : var.secret_key
 
   bucket {
     name = var.bucket_name
@@ -34,8 +54,8 @@ resource "upcloud_object_storage" "velero" {
 resource "local_file" "velero-secret-file" {
   content  = <<-EOT
 [default]
-aws_access_key_id=${var.access_key}
-aws_secret_access_key=${var.secret_key}
+aws_access_key_id=${upcloud_object_storage.velero.access_key}
+aws_secret_access_key=${upcloud_object_storage.velero.secret_key}
 EOT
   filename = "${path.module}/velero-secret-file.txt"
 
