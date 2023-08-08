@@ -63,8 +63,7 @@ You can run the installation script `terraform/velero-install.sh` as-is, or you 
 Kick off the installation script:
 
 ```text
-cd terraform
-./velero-install.sh
+./terraform/velero-install.sh
 ```
 
 Velero should be installed in a few seconds. You can check the installation logs in the Velero pod. You should see a successful connection to the S3 bucket:
@@ -92,8 +91,7 @@ kubectl apply -f k8s/velero-demo-app.yaml
 Once the load balancer service is up, load the default nginx welcome page:
 
 ```text
-kubectl get services -n velero-demo
-curl -i lb-yourlbdnsname-1.upcloudlb.com
+curl -i $(kubectl get services -n velero-demo lb-nginx -o jsonpath={.status.loadBalancer.ingress[0].hostname})
 ```
 
 Verify that you can see the webpage loads in nginx logs. The logs are stored on a Persistent Volume:
@@ -112,7 +110,7 @@ velero describe backups velerotest1
 Let's reload the nginx welcome page a few times to get more data. Remember, we created the backup point-in-time before these log messages, so they should not be visible after restore.
 
 ```text
-curl -i lb-yourlbdnsname-1.upcloudlb.com
+curl -i $(kubectl get services -n velero-demo lb-nginx -o jsonpath={.status.loadBalancer.ingress[0].hostname})
 kubectl exec -n velero-demo deployment/nginx -it -- cat /var/log/nginx/access.log
 ```
 
@@ -128,12 +126,6 @@ The default Reclaim Policy for PVCs in UKS is to `Retain` the Persistent Volume 
 
 ```text
 kubectl patch pv $(kubectl get pvc nginx-logs -n velero-demo -o jsonpath='{.spec.volumeName}') -p '{"spec":{"persistentVolumeReclaimPolicy":"Delete"}}'
-```
-
-In addition, we need to get rid of a Volume Snaphost Contents that was created by Velero:
-
-```text
-kubectl delete volumesnapshotcontents.snapshot.storage.k8s.io --selector velero.io/backup-name=velerotest1
 ```
 
 Now we are ready to delete the test app deployment and the PVC and see if we can do a successful restore:
@@ -152,7 +144,7 @@ velero restore create --from-backup velerotest1
 The restore should be done in a couple of minutes. Verify that you can still access the nginx welcome page:
 
 ```text
-curl -i lb-yourlbdnsname-1.upcloudlb.com
+curl -i $(kubectl get services -n velero-demo lb-nginx -o jsonpath={.status.loadBalancer.ingress[0].hostname})
 ```
 
 Lastly, let's see what log entries we have left:
@@ -170,3 +162,27 @@ You can also view all the backup and restore files directly in the S3 Bucket. No
 * Feel free to poke around the file system and see the backup and restore files
 
 ![Velero Bucket](images/velero-bucket.png)
+
+## Cleanup
+
+Let's remove our demo app:
+
+```text
+kubectl delete -f k8s/velero-demo-app.yaml
+```
+
+Then, run `make` to destroy the created object storage in the `backup folder` :
+
+```text
+make destroy
+```
+
+Note that the velero install is still in the UKS cluster. If you want to remove it, just get rid of the velero namespace:
+
+```text
+kubectl delete ns velero
+```
+
+Due to the existing policies, also the snapshot created during Velero backup is still under `Backups` in UpCloud Hub. You can delete that manually. The snapshot is not attached to any server.
+
+![Backups](images/upcloud-backups.png)
