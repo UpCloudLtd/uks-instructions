@@ -34,7 +34,7 @@ secret_key      = ""
 
 Velero needs an S3 compatible object storage to upload the backup files to. We will be using the UpCloud Object Storage service for this. In addition, Velero supports CSI based snapshots for Persistent Volume backups. These backup snapshots won't be stored in the S3 bucket, they will remain in the storage system and therefore limits the restore to the same zone where the initial backup was taken. [UpCloud MaxIOPS](https://upcloud.com/products/block-storage) supports snapshots and our [CSI driver](https://github.com/UpCloudLtd/upcloud-csi) fully supports the feature.
 
-Initiate the project and install required Terraform providers.
+After you have cloned this repo, go to the `backup` folder. Initiate the project and install required Terraform providers.
 
 ```text
 make init
@@ -88,7 +88,7 @@ Deploy the app:
 kubectl apply -f k8s/velero-demo-app.yaml
 ```
 
-Once the load balancer service is up, load the default nginx welcome page:
+Once the load balancer service is up after a couple of minutes, load the default nginx welcome page:
 
 ```text
 curl -i $(kubectl get services -n velero-demo lb-nginx -o jsonpath={.status.loadBalancer.ingress[0].hostname})
@@ -98,6 +98,12 @@ Verify that you can see the webpage loads in nginx logs. The logs are stored on 
 
 ```text
 kubectl exec -n velero-demo deployment/nginx -it -- cat /var/log/nginx/access.log
+```
+
+Before we create a backup, we need to change the Reclaim Policy to demonstrate the loss of a persistent volume. The default Reclaim Policy for Persistent Volumes in UKS is to `Retain` the Persistent Volume after a Persistent Volume Claim has been deleted. Let's make sure our restore really works, and remove the Persistent Volume along with the PVC. We can change the Reclaim Policy to `Delete` on an individual Persistent Volume:
+
+```text
+kubectl patch pv $(kubectl get pvc nginx-logs -n velero-demo -o jsonpath='{.spec.volumeName}') -p '{"spec":{"persistentVolumeReclaimPolicy":"Delete"}}'
 ```
 
 Now we are ready to create a backup! Note the time stamps on the nginx logs, so you can verify the backup and restore worked as expected. We are using a label to select the test app resources, but Velero can also backup using namespaces. Use the `velero describe` command to monitor the backup process.
@@ -122,14 +128,6 @@ kubectl exec -n velero-demo deployment/nginx -it -- ls -la /var/log/nginx/
 
 We have data in the logs, and our backup has completed with pre- and post-hooks executed. Time to get rid of our app!
 
-The default Reclaim Policy for PVCs in UKS is to `Retain` the Persistent Volume after a Persistent Volume Claim has been deleted. Let's make sure our restore really works, and remove the Persistent Volume as well. We can change the Reclaim Policy to `Delete` on an individual Persistent Volume:
-
-```text
-kubectl patch pv $(kubectl get pvc nginx-logs -n velero-demo -o jsonpath='{.spec.volumeName}') -p '{"spec":{"persistentVolumeReclaimPolicy":"Delete"}}'
-```
-
-Now we are ready to delete the test app deployment and the PVC and see if we can do a successful restore:
-
 ```text
 kubectl delete deployments.apps -n velero-demo nginx
 kubectl delete pvc -n velero-demo nginx-logs
@@ -141,7 +139,7 @@ The app is now gone, so let's do a restore.
 velero restore create --from-backup velerotest1
 ```
 
-The restore should be done in a couple of minutes. Verify that you can still access the nginx welcome page:
+The restore should be done in 10 minutes. Note that the PVC restore can take some time since we are recovering from a snapshot. Verify that you can still access the nginx welcome page:
 
 ```text
 curl -i $(kubectl get services -n velero-demo lb-nginx -o jsonpath={.status.loadBalancer.ingress[0].hostname})
@@ -155,7 +153,7 @@ kubectl exec -n velero-demo deployment/nginx -it -- cat /var/log/nginx/access.lo
 
 You should have the original logs created before backup, and the latest logs from the page load after restore!
 
-You can also view all the backup and restore files directly in the S3 Bucket. Note that the PVC snapshots are not stored in the bucket, they are in the same storage system as the original Persistent Volume:
+You can also view all the backup and restore files directly in the S3 Bucket. The PVC snapshots are not stored in the bucket, they are in the same storage system as the original Persistent Volume:
 
 * Go to [UpCloud](https://upcloud.com), login and go to `Object Storage`
 * Click on `velero` Object Storage and select the `uks` bucket
@@ -165,13 +163,25 @@ You can also view all the backup and restore files directly in the S3 Bucket. No
 
 ## Cleanup
 
+Again, you have to patch the Persistent Volume to get rid of both the PVC and PV on deletion. If you forget this step, just delete the extra storage device in UpCloud after everything else is deleted.
+
+```text
+kubectl patch pv $(kubectl get pvc nginx-logs -n velero-demo -o jsonpath='{.spec.volumeName}') -p '{"spec":{"persistentVolumeReclaimPolicy":"Delete"}}'
+```
+
 Let's remove our demo app:
 
 ```text
 kubectl delete -f k8s/velero-demo-app.yaml
 ```
 
-Then, run `make` to destroy the created object storage in the `backup folder` :
+Before getting rid of the Object Storage, it's a good idea to clean up the Velero backups. If you don't, the snapshots will remain in UpCloud. You can of course delete those manually.
+
+```text
+velero backup delete velerotest1
+```
+
+Then, run `make` to destroy the created object storage in the `backup` folder :
 
 ```text
 make destroy
@@ -182,7 +192,3 @@ Note that the velero install is still in the UKS cluster. If you want to remove 
 ```text
 kubectl delete ns velero
 ```
-
-Due to the existing policies, also the snapshot created during Velero backup is still under `Backups` in UpCloud Hub. You can delete that manually. The snapshot is not attached to any server.
-
-![Backups](images/upcloud-backups.png)

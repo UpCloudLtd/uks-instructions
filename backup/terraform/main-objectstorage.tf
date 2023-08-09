@@ -66,7 +66,7 @@ EOT
 resource "local_file" "velero-install" {
   content  = <<-EOT
 #!/bin/bash
-velero install --features=EnableCSI --plugins velero/velero-plugin-for-aws:v1.7.0 --bucket ${var.bucket_name} --backup-location-config region=${var.zone},s3ForcePathStyle=true,s3Url=${upcloud_object_storage.velero.url} --secret-file ./velero-secret-file.txt --provider aws --snapshot-location-config region=${var.zone}
+velero install --features=EnableCSI --plugins velero/velero-plugin-for-aws:v1.7.0 --bucket ${var.bucket_name} --backup-location-config region=${var.zone},s3ForcePathStyle=true,s3Url=${upcloud_object_storage.velero.url} --secret-file ./terraform/velero-secret-file.txt --provider aws --snapshot-location-config region=${var.zone}
 velero plugin add velero/velero-plugin-for-csi:v0.5.0
 kubectl label volumesnapshotclasses.snapshot.storage.k8s.io upcloud-csi-snapshotclass velero.io/csi-volumesnapshot-class="true"
 EOT
