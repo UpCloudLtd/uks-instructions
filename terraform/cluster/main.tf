@@ -1,3 +1,8 @@
+# Create a router for your network
+resource "upcloud_router" "example" {
+  name = "${var.basename}-router"
+}
+
 # Create a network for your cluster
 resource "upcloud_network" "example" {
   name = "${var.basename}-net"
@@ -9,11 +14,12 @@ resource "upcloud_network" "example" {
     family  = "IPv4"
   }
 
-  # UpCloud Kubernetes Service will add a router to this network to ensure cluster networking is working as intended.
-  # You need to ignore changes to it, otherwise TF will attempt to detach the router on subsequent applies
-  lifecycle {
-    ignore_changes = [router]
-  }
+  # If router is omitted here, UpCloud Kubernetes Service will add a router to this network automatically. In Terraform, we recommend defining the router explicitly to avoid Terraform trying to detach the automatically created router which is not recognized by Terraform.
+  router = upcloud_router.example.id
+  # If you do not expicitly set the router, you'll need to ignore changes to it. Otherwise, Terraform will attempt to detach the router on subsequent applies.
+  # lifecycle {
+  #   ignore_changes = [router]
+  # }
 }
 
 # Create a cluster
