@@ -37,7 +37,10 @@ See [ccm/README.md](ccm/README.md).
 
 See [storage/README.md](storage/README.md).  
 
+## Autoscaling
+
+See [autoscaling/README.md](autoscaling/README.md).
+
 ## Troubleshooting
 
 See [KNOWN_ISSUES.md](KNOWN_ISSUES.md)
-
