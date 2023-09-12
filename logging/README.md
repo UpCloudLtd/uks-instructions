@@ -62,7 +62,7 @@ helm repo add fluent https://fluent.github.io/helm-charts
 Finally, install Fluent-bit to `fluent-bit` namespace:
 
 ```
-helm install --repo https://fluent.github.io/helm-charts fluent-bit --values terraform/opensearch-fluentbit-helm-values.yaml --namespace fluent-bit --create-namespace fluent-bit .
+helm install --repo https://fluent.github.io/helm-charts fluent-bit --values terraform/opensearch-fluentbit-helm-values.yaml --namespace fluent-bit --create-namespace fluent-bit
 ```
 
 If you want to further modify your fluent-bit configuration, please refer to the [chart documentation](https://github.com/fluent/helm-charts/blob/main/charts/fluent-bit/values.yaml). You can copy the generated values file to another location and add your changes to it.
