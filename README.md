@@ -20,9 +20,9 @@ The simplest way to create a cluster is to use our Control Panel. You can do so 
 * When the cluster is running, you can download your cluster's kubeconfig file; it allows you to access your cluster easily via command line with [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl). See [Exposing Services](#exposing-services) for example on deploying an _Hello UKS_ application to your newly created cluster.
 
 ### Alternatives
-You can also create a cluser using the following ways:
+You can also create a cluster using the following ways:
 * Terraform - see [terraform/README.md](terraform/README.md) for more precise instructions
-* Direct API access - see [openapi/openapi.yaml](openapi/openapi.yaml) for UKS API documentation; authentication can be achieved with [these](https://developers.upcloud.com/1.3/2-architecture/#authentication) instructions
+* Direct API access - see [UpCloud API Documentation](https://developers.upcloud.com/1.3/20-managed-kubernetes/) for UKS API documentation; authentication can be achieved with [these](https://developers.upcloud.com/1.3/2-architecture/#authentication) instructions
 
 ### Kubeconfig
 
