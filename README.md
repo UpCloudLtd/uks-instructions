@@ -31,7 +31,13 @@ Alternatively, if you use Terraform you can leverage `local_file` provider to cr
 
 ## Exposing Services
 
+### UpCloud Managed Load Balancer
+
 See [ccm/README.md](ccm/README.md).
+
+### Ingress NGINX controller
+
+See [ingress-nginx/README.md](ingress-nginx/README.md).
 
 ## Persistent storage
 
