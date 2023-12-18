@@ -3,7 +3,7 @@
 This document lists current known issues with UpCloud Kubernetes Service.
 
 ## Cluster configuration
-- Before creating the cluster, not that there are the following reserved CIDRs (your SDN should have CIDR not intersected with):
+- Before creating the cluster, note that there are the following reserved CIDRs (your SDN should have CIDR not intersected with):
   * Control Plane CIDR: `172.31.240.0/24`
   * Service CIDR: `10.128.0.0/12`
   * POD CIDR: `192.168.0.0/16`
