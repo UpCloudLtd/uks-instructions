@@ -37,7 +37,7 @@ from Cluster A. We will then use this to restore into Cluster B.
   `s3cmd`. Let's use the interactive configuration wizard:
 
   ```
-  $ s3cmd --configure
+  s3cmd --configure
 
   Access Key: {access_key}
   Secret Key: {secret_key}
@@ -71,7 +71,53 @@ from Cluster A. We will then use this to restore into Cluster B.
   will create an `~/.s3cfg` file (in your user's home directory).
 - Finally, run
   ```
-  $ s3cmd -c ~/.s3cfg mb s3://velero
+  s3cmd -c ~/.s3cfg mb s3://velero
   ```
   to create a bucket called `velero`. Head to the 'Buckets' tab under
   your Object Storage instance to verify it got created.
+
+## Performing the migration
+
+- First, create a config file for Velero containing your bucket's access
+  and secret keys like so (`velero.conf`):
+
+  ```config
+  [default]
+  aws_access_key_id={access_key}
+  aws_secret_access_key={secret_key}
+  ```
+- We will use Velero's AWS S3 provider to interface with UpCloud Object
+  Storage. Now, let's install Velero on both clusters A and B. Ensure your
+  kubeconfigs are pointing to the correct clusters:
+
+  ```
+  export KUBECONFIG=path/to/cluster-A-kubeconfig
+  velero install --provider aws \
+      --plugins velero/velero-plugin-for-aws:v1.8.0 \
+      --bucket velero --secret-file ./velero.conf \
+      --backup-location-config region=europe-1,s3ForcePathStyle="true",s3Url=https://{hostname} \
+      --use-volume-snapshots=false
+  
+  export KUBECONFIG=path/to/cluster-B-kubeconfig
+  # repeat for cluster B
+  ```
+- In Cluster A, run:
+  ```
+  velero backup create backup-1 --include-resources='*' --wait
+  velero backup logs backup-1    # to inspect backup logs
+  ```
+- Once done, in Cluster B, check to see if the backup we created in
+  Cluster A is visible:
+  ```
+  velero backup describe backup-1
+  ```
+  You may need to wait a bit for it to show up since Velero in Cluster B
+  might need to synchronize against the configured object storage
+  bucket.
+
+- Restore from the backup using:
+  ```
+  velero restore create --from-backup backup-1
+  velero restore get
+  velero restore describe <restore-name-from-get-command>
+  ```
