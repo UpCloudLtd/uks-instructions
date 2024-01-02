@@ -137,6 +137,14 @@ matchExpressions:
 
 If left empty, then all cluster worker nodes are set as backend members.
 
+## Deleting Load Balancer
+
+In order to delete the managed Load Balancer just delete the service object that created it in your Kubernetes cluster.
+
+Please note that:
+- Managed Load Balancer *will not* be deleted if you just delete the whole UKS cluster. You either have to delete all service objects before deleting the cluster, or manually delete all managed Load Balancers after deleting the cluster (via [Hub](https://hub.upcloud.com) or [upctl](https://github.com/UpCloudLtd/upcloud-cli)).
+- There is no way to preserve managed Load Balancer IP address when deleting it. In general UpCloud does not recommend to rely on those IP addresses at all - instead you should use Load Balancers hostname (for example for CNAME DNS records).
+
 ## Auto TLS provisioning
 
 You can force automatic TLS certificate provision for load balancer (1 auto TLS per load balancer).
