@@ -121,3 +121,17 @@ from Cluster A. We will then use this to restore into Cluster B.
   velero restore get
   velero restore describe <restore-name-from-get-command>
   ```
+
+## Caveats
+
+If Cluster A has services of type `LoadBalancer`, they will not come up
+correctly in Cluster B because the new set of service accounts cannot
+access the actual UpCloud Load Balancer via the API. The workaround is
+to recreate these services manually:
+
+- Delete the initially restored service. You may have to `kubectl edit`
+  to remove the finalizer for the delete to go through.
+- Recreate the service with a different name than the original:
+  ```
+  kubectl expose ... --type='LoadBalancer' --name='my-new-loadbalancer-service'
+  ```
