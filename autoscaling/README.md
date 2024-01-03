@@ -6,8 +6,6 @@ UpCloud's CA cloud provider implementation does this by increasing or decreasing
 Cluster Autoscaler works particularly well along with Kubernetes built-in [horizontal pod autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) (HPA). 
 In short, HPA scales the number of pods depending on the current workload and when CA notices that cluster resource requirements has changed, it will try to adjust worker node count to meet new needs.
 
-[Cluster Autoscaler for UpCloud](https://github.com/UpCloudLtd/autoscaler/tree/feat/cluster-autoscaler-cloudprovider-upcloud/cluster-autoscaler/cloudprovider/upcloud) project is still in beta phase and it's **NOT** recommended for production environment usage.
-
 Additional info about the Cluster Autoscaler can be found from the project's [README](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/README.md) file and from the [FAQ](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md) .
 
 ## Deploy Cluster Autoscaler for UpCloud
