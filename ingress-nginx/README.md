@@ -1,18 +1,28 @@
 # Using [Ingress NGINX Controller](https://kubernetes.github.io/ingress-nginx/) to expose Kubernetes deployments and services
 
-## Prequisites
+In this tutorial we will create a Managed Kubernetes cluster, deploy an example app and expose it with Ingress Nginx
+Controller. Last optional step will be to keep exxternal DNS records in sync for public access.
+
+## Prerequisites
 
 - [terraform](https://developer.hashicorp.com/terraform/install?product_intent=terraform)
-- UpCloud API username and password in `UPCLOUD_USERNAME` and `UPCLOUD_PASSWORD`
+- [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)
+- UpCloud API username and password set in `UPCLOUD_USERNAME` and `UPCLOUD_PASSWORD` env variables
+- (optional) [CloudFlare DNS service](https://www.cloudflare.com/application-services/products/dns/) for setting up
+  public DNS resolving
+    - (optional) CloudFlare API key and email set in `TF_VAR_CF_API_KEY` and `TF_VAR_CF_API_EMAIL` env variables
 
 ## Create UpCloud Managed Kubernetes cluster with Terraform UpCloud provider
 
 First, we'll create a Managed Kubernetes cluster to contain our workloads, like the ingress-nginx controller and our
 example backend application deployment.
 
-The following Terraform configuration can be split into multiple ` .tf` files in the same directory or put in a single file,
+The following Terraform configurations can be split into multiple `.tf` files in the same directory or put in a single
+file,
 for example `main.tf`.
 
+Replace the contents of `control_plane_ip_filter` property of `upcloud_kubernetes_cluster` resource with IP address(es)
+and / or IP ranges that you want to access the cluster from.
 
 ```terraform
 # Terraform block including `helm` and `kubernetes` providers for next steps
@@ -20,17 +30,17 @@ terraform {
   required_providers {
     upcloud = {
       source  = "UpCloudLtd/upcloud"
-      version = "~> 3.1"
+      version = "~> 3.3.0"
     }
 
     helm = {
       source  = "hashicorp/helm"
-      version = "~> 2.12"
+      version = "~> 2.12.1"
     }
 
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "~> 2.24"
+      version = "~> 2.24.0"
     }
   }
 }
@@ -117,8 +127,8 @@ provider "helm" {
   }
 }
 
-# Helm release
-resource "helm_release" "example-release" {
+# Helm release for Ingress NGINX controller
+resource "helm_release" "example-release-nginx" {
   name       = "ingress-nginx"
   repository = "https://kubernetes.github.io/ingress-nginx"
   chart      = "ingress-nginx"
@@ -129,6 +139,8 @@ resource "helm_release" "example-release" {
     controller:
       hostNetwork: true
       replicaCount: 3
+    service:
+      type: NodePort
     EOT
   ]
 }
@@ -246,6 +258,13 @@ resource "kubernetes_ingress_v1" "example-ingress" {
     }
   }
 }
+
+# Kubeconfig local file for accessing the cluster with kubectl 
+resource "local_file" "kubeconfig-example" {
+  content  = data.upcloud_kubernetes_cluster.example-cluster.kubeconfig
+  filename = "${path.module}/kubeconfig-example.yml"
+}
+
 ```
 
 Terraform `apply` command to be run in the shell:
@@ -255,5 +274,90 @@ Terraform `apply` command to be run in the shell:
 terraform apply
 ```
 
-## Keep external DNS records in sync with [ExternalDNS](https://github.com/kubernetes-sigs/external-dns)
+To find out the external IP addresses of the Kubernetes nodes for accessing your apps, you can use kubectl:
 
+```shell
+# To output the Kubernetes node information
+KUBECONFIG=./kubeconfig-example.yml kubectl get nodes -o wide
+```
+
+Pointing your browser to `http://<EXTERNAL-IP>/example-app` will respond with the contents of our example app.
+
+## (Optional) Keep external DNS records in sync with [ExternalDNS](https://github.com/kubernetes-sigs/external-dns) and [CloudFlare DNS service](https://www.cloudflare.com/application-services/products/dns/)
+
+In this example, we are using CloudFlare DNS service as an example for managing the DNS records.
+
+Modify the existing Helm release for Ingress NGINX controller to match the following in the Terraform configuration: (
+replace `example.com` with your hostname)
+
+```terraform
+# Helm release for Ingress NGINX controller
+resource "helm_release" "example-release-ingress-nginx" {
+  name       = "ingress-nginx"
+  repository = "https://kubernetes.github.io/ingress-nginx"
+  chart      = "ingress-nginx"
+  version    = "4.8.3"
+
+  values = [
+    <<-EOT
+    controller:
+      hostNetwork: true
+      replicaCount: 3
+      service:
+        annotations:
+          external-dns.alpha.kubernetes.io/hostname: example.com.
+        type: NodePort
+    EOT
+  ]
+}
+```
+
+Add the following to the Terraform configuration:
+
+```terraform
+# Input variables for configuring ExternalDNS CloudFlare authentication
+variable "CF_API_KEY" {
+  type = string
+}
+
+variable "CF_API_EMAIL" {
+  type = string
+}
+
+# Helm release for ExternalDNS
+resource "helm_release" "example-release-external-dns" {
+  name       = "external-dns"
+  repository = "https://kubernetes-sigs.github.io/external-dns"
+  chart      = "external-dns"
+  version    = "1.13.1"
+
+  values = [
+    <<-EOT
+    env:
+      - name: CF_API_KEY
+        value: ${var.CF_API_KEY}
+      - name: CF_API_EMAIL
+        value: ${var.CF_API_EMAIL}
+    provider: cloudflare
+    EOT
+  ]
+}
+```
+
+Terraform `apply` command to be run in the shell:
+
+```shell
+# To apply the current configuration
+terraform apply
+```
+
+After the DNS records have propagated, the example app is now available via `http://<HOSTNAME>/example-app`.
+
+
+## Destroy the provisioned infrastructure
+
+Terraform `destroy` command to be run in the shell:
+```shell
+# To destroy the current configuration
+terraform destroy
+```
