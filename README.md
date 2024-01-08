@@ -41,6 +41,10 @@ See [storage/README.md](storage/README.md).
 
 See [autoscaling/README.md](autoscaling/README.md).
 
+## Migration
+
+See [migration/README.md](migration/README.md).
+
 ## Troubleshooting
 
 See [KNOWN_ISSUES.md](KNOWN_ISSUES.md)
