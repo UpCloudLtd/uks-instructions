@@ -106,3 +106,4 @@ kube-terraform-test-0-tb9k9   Ready    <none>   3h6m   v1.26.3
 
 ## What's next
 - Leave Cluster Autoscaler running and [setup Horizontal Pod Autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/)  to automatically update workload resources
+- See how you can [deploy cluster autoscaler using Terraform](https://github.com/UpCloudLtd/autoscaler/tree/feat/cluster-autoscaler-cloudprovider-upcloud/cluster-autoscaler/cloudprovider/upcloud/examples/terraform)
