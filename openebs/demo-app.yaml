@@ -1,0 +1,112 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-app-1
+  labels: 
+    app: demo-app-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-app-1
+  template:
+    metadata:
+      labels:
+        app: demo-app-1
+    spec:
+      volumes:
+        - name: rwx-pvc
+          persistentVolumeClaim:
+           claimName: rwx-pvc
+        - name: rwx-test-script
+          configMap:
+           name: rwx-test-script
+           defaultMode: 0744
+      containers:
+      - image: nginx:latest
+        name: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: "/tmp"
+          name: rwx-pvc
+          readOnly: false      
+        - name: rwx-test-script
+          mountPath: /script
+        command: ["/script/rwx-test-script.sh"]     
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-app-2
+  labels: 
+    app: demo-app-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-app-2
+  template:
+    metadata:
+      labels:
+        app: demo-app-2
+    spec:
+      volumes:
+        - name: rwx-pvc
+          persistentVolumeClaim:
+           claimName: rwx-pvc
+        - name: rwx-test-script
+          configMap:
+           name: rwx-test-script
+           defaultMode: 0744
+      containers:
+      - image: nginx:latest
+        name: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: "/tmp"
+          name: rwx-pvc
+          readOnly: false      
+        - name: rwx-test-script
+          mountPath: /script
+        command: ["/script/rwx-test-script.sh"]     
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rwx-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: "openebs-rwx"
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rwx-test-script
+data:
+  rwx-test-script.sh: |
+    #!/bin/bash
+    # Calculate the end time: current time + 5 minutes (300 seconds)
+    end=$((SECONDS+300))
+
+    # Loop until 5 minutes have passed
+    while [ $SECONDS -lt $end ]; do
+      # Generate the filename using hostname and timestamp
+      filename="/tmp/$(hostname)_$(date +%Y%m%d%H%M%S).txt"
+      
+      # Echo some content into the file
+      echo "This is a file created at $(date)" > "$filename"
+      
+      # Wait for 1 second before creating the next file
+      sleep 1
+    done
+    
