@@ -6,6 +6,7 @@ UpCloud [CSI](https://github.com/container-storage-interface/spec) [Driver](http
 
 See https://github.com/UpCloudLtd/upcloud-csi/tree/main/example for various examples for our CSI driver.
 
+
 ## Deploy MariaDB using persistent volume
 
 This example shows how we can make MariaDB survive reboots and pod re-creations by using persistent volume claim (PVC).   
@@ -154,3 +155,4 @@ $ kubectl exec -it deployments/mariadb -- mysql -uroot -p$MARIADB_PASSWORD -e "S
 - See how volume size can be [extended](expand.md) by patching PVC object
 - See [volume cloning](cloning.md) to find out how `mariadb-pvc` can be used as base volume using clone feature
 - Read [migrating persistent volume claim (PVC) from one cluster to another](migration.md)
+- See how to [update CSI driver](driver_update.md) using kubectl command
