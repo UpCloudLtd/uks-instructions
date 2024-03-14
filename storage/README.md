@@ -156,3 +156,4 @@ $ kubectl exec -it deployments/mariadb -- mysql -uroot -p$MARIADB_PASSWORD -e "S
 - See [volume cloning](cloning.md) to find out how `mariadb-pvc` can be used as base volume using clone feature
 - Read [migrating persistent volume claim (PVC) from one cluster to another](migration.md)
 - See how to [update CSI driver](driver_update.md) using kubectl command
+- Use custom storage class to enable [storage encryption at rest](storage_encryption.md).
