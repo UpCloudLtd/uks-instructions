@@ -17,6 +17,7 @@ provisioner: storage.csi.upcloud.com
 ```
 
 Once defined, use newly created storage class with storage that you want to encrypt
+
 ```yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -30,4 +31,3 @@ spec:
       storage: 10Gi
   storageClassName: upcloud-encrypted-block-storage
 ```
-Note that, using encrypted snapshots as volume source is not supported yet.
