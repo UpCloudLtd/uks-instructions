@@ -17,7 +17,7 @@ You will need the following tools and environments to be installed and configure
 
 This guide will follow the [official Pinniped documentation](https://pinniped.dev/docs/tutorials/concierge-and-supervisor-demo/). We will be installing the Pinniped Supervisor service, which acts as a central authentication service for all the Kubernetes clusters in your environment. In general, the guide works well, but there are some UpCloud specific settings needed, which we will cover below. The documented Okta configuration also had some issues, which are also covered here.
 
-Start by deploying the Supervisor components to your **Supervisor UKS cluster**. Run all the commands as the **cluster admin**.
+Start by deploying the Supervisor components to your `Supervisor UKS cluster`. Run all the commands as the `cluster admin`.
 
 ```{text}
 kubectl apply -f https://get.pinniped.dev/v0.29.0/install-pinniped-supervisor.yaml
@@ -128,7 +128,7 @@ Click the next tab called Claims and click Add Claim. Create the claim as in the
 
 ![Add Claim](claims.png)
 
-Now we can connect Okta and the Pinniped Supervisor. Run all the commands as the **cluster admin** on the **Supervisor UKS cluster**.
+Now we can connect Okta and the Pinniped Supervisor. Run all the commands as the `cluster admin` on the `Supervisor UKS cluster`.
 
 ```{text}
 kubectl apply -f okta_oidc.yaml
@@ -300,7 +300,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ```
 
-Time to create the kubeconfig file for the end user. You need to have the Workload UKS **cluster admin** kubeconfig file for this. The following command uses the pinniped CLI to create a Pinniped compatible kubeconfig file that the users can use to authenticate for this particular cluster. It will work for all the users and you only need to create it per cluster. Notice how the kubeconfig file does not contain any identifiable information on the users, and it is pointing to the Supervisor Load Balancer we created earlier.
+Time to create the kubeconfig file for the end user. You need to have the Workload UKS `cluster admin` kubeconfig file for this. The following command uses the pinniped CLI to create a Pinniped compatible kubeconfig file that the users can use to authenticate for this particular cluster. It will work for all the users and you only need to create it per cluster. Notice how the kubeconfig file does not contain any identifiable information on the users, and it is pointing to the Supervisor Load Balancer we created earlier.
 
 ```{text}
 pinniped get kubeconfig > workload1-developer.yaml --kubeconfig workload-cluster-admin.yaml
