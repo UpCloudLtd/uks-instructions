@@ -1,0 +1,53 @@
+apiVersion: idp.supervisor.pinniped.dev/v1alpha1
+kind: OIDCIdentityProvider
+metadata:
+  namespace: pinniped-supervisor
+  name: okta
+spec:
+
+  # Specify the upstream issuer URL (no trailing slash). Change this to be the
+  # actual issuer provided by your Okta account.
+  issuer: https://your_okta_domain.okta.com/oauth2/default
+
+  # Specify how to form authorization requests to Okta.
+  authorizationConfig:
+
+    # Request any scopes other than "openid" for claims besides
+    # the default claims in your token. The "openid" scope is always
+    # included.
+    #
+    # To learn more about how to customize the claims returned, see here:
+    # https://developer.okta.com/docs/guides/customize-tokens-returned-from-okta/overview/
+    additionalScopes: [groups, email]
+
+  # Specify how Okta claims are mapped to Kubernetes identities.
+  claims:
+
+    # Specify the name of the claim in your Okta token that will be mapped
+    # to the "username" claim in downstream tokens minted by the Supervisor.
+    username: email
+
+    # Specify the name of the claim in Okta that represents the groups
+    # that the user belongs to. This matches what you specified above
+    # with the Groups claim filter.
+    groups: groups
+
+  # Specify the name of the Kubernetes Secret that contains your Okta
+  # application's client credentials (created below).
+  client:
+    secretName: okta-client-credentials
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: pinniped-supervisor
+  name: okta-client-credentials
+type: secrets.pinniped.dev/oidc-client
+stringData:
+
+  # The "Client ID" that you got from Okta.
+  clientID: "" # Client ID from Okta application
+
+  # The "Client secret" that you got from Okta.
+  clientSecret: "" # Client Secret from Okta application

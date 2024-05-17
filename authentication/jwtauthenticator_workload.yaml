@@ -1,0 +1,9 @@
+apiVersion: authentication.concierge.pinniped.dev/v1alpha1
+kind: JWTAuthenticator
+metadata:
+  name: pinniped-supervisor-jwt-authenticator
+spec:
+  # This should be the issuer URL that was declared in the FederationDomain.
+  issuer: "https://pinniped.example.com/pinniped-issuer"
+  # Replace this with your own unique value.
+  audience: pinniped-cluster-ed9de33c370981f61e9d

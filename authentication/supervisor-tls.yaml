@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: supervisor-tls-cert-request
+  namespace: pinniped-supervisor
+spec:
+  secretName: supervisor-tls-cert
+  issuerRef:
+    # The cert-manager Issuer created in the step above.
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - pinniped.example.com

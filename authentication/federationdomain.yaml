@@ -1,0 +1,12 @@
+apiVersion: config.supervisor.pinniped.dev/v1alpha1
+kind: FederationDomain
+metadata:
+  name: federation-domain
+  namespace: pinniped-supervisor
+spec:
+  # You can choose an arbitrary path for the issuer URL.
+  issuer: "https://pinniped.example.com/pinniped-issuer"
+  tls:
+    # The name of the secretName from the cert-manager Certificate
+    # resource above.
+    secretName: supervisor-tls-cert

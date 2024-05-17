@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pinniped-supervisor-loadbalancer
+  namespace: pinniped-supervisor
+  annotations:
+    service.beta.kubernetes.io/upcloud-load-balancer-config: |
+      {
+        "name": "pinniped-supervisor-loadbalancer",
+        "plan": "development",
+        "frontends": [
+          {
+            "name": "https",
+            "mode": "tcp",
+            "port": 443
+          }
+        ],
+        "backends": [
+          {
+            "name": "https"
+          }
+        ]
+      }
+spec:
+  type: LoadBalancer
+  selector:
+    app: pinniped-supervisor
+  ports:
+  - protocol: TCP
+    name: "https"
+    port: 443
+    targetPort: 8443 # 8443 is the TLS port.
