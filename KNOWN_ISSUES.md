@@ -26,11 +26,6 @@ This document lists current known issues with UpCloud Kubernetes Service.
 - You need to wait for cluster to get into `running` state before attempting to scale node groups or deleting the cluster, otherwise some resources might
 not be cleaned up properly
 
-
-## Load balancing
-
-- Network configuration for automatically provisioned load balancers is not supported yet. Internal load balancers cannot be used.
-
 ## UI
 
 - Upon cluster deletion, the UI might show cluster status as "running".
