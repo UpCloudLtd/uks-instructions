@@ -1,3 +1,6 @@
+> [!CAUTION]
+> This repository has been archived. All content from this repository has been migrated to [UpCloud's product documentation](https://upcloud.com/docs/products/managed-kubernetes/tutorials/)
+
 # UpCloud Kubernetes Service examples
 
 This repository contains sample configurations for Terraform and Kubernetes manifests to get started with our UpCloud Kubernetes Service (UKS).
