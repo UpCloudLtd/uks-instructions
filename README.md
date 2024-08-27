@@ -1,5 +1,5 @@
 > [!CAUTION]
-> This repository has been archived. All content from this repository has been migrated to [UpCloud's product documentation](https://upcloud.com/docs/products/managed-kubernetes/tutorials/)
+> This repository has been archived. All content from this repository has been migrated to [UpCloud's product documentation](https://upcloud.com/docs/products/managed-kubernetes/) and [product tutorials](https://upcloud.com/docs/tutorials/#kubernetes).
 
 # UpCloud Kubernetes Service examples
 
